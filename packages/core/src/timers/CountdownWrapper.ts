@@ -41,11 +41,17 @@ export class CountdownWrapper extends Timer {
       // Play countdown beeps
       const remainingSeconds = Math.ceil((this.countdownDuration - this.countdownElapsed) / 1000);
       if (remainingSeconds <= 10 && remainingSeconds > 0 && remainingSeconds !== this.lastSecondAnnounced) {
-        this.soundManager.playCountdownBeep(remainingSeconds);
         if (remainingSeconds <= 3) {
+          this.soundManager.playCountdownBeep(remainingSeconds);
           this.soundManager.announceNumber(remainingSeconds);
         }
         this.lastSecondAnnounced = remainingSeconds;
+      }
+      
+      // Play GO sound at 0
+      if (remainingSeconds === 0 && this.lastSecondAnnounced !== 0) {
+        this.soundManager.playCountdownBeep(0);
+        this.lastSecondAnnounced = 0;
       }
       
       if (this.countdownElapsed >= this.countdownDuration) {
