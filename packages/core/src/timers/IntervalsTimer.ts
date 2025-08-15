@@ -10,6 +10,7 @@ export class IntervalsTimer extends Timer {
   private totalDuration: number;
   private singleRoundDuration: number;
   private hasStartedFirstInterval: boolean = false;
+  private lastWarningSecond: number = -1;
   
   constructor(config: IntervalsConfig) {
     super(config);
@@ -28,7 +29,16 @@ export class IntervalsTimer extends Timer {
   }
   
   protected tick(): void {
-    super.tick();
+    // Call parent tick but we'll handle our own countdown sounds
+    this.elapsed = Date.now() - (this.startTime || 0) - this.totalPausedTime;
+    const snapshot = this.getSnapshot();
+    this.emit('tick', snapshot);
+    
+    // Check if complete
+    if (this.isComplete()) {
+      this.finish();
+      return;
+    }
     
     // Play sound for first interval on first tick
     if (!this.hasStartedFirstInterval && this.intervals.length > 0) {
@@ -68,24 +78,66 @@ export class IntervalsTimer extends Timer {
       accumulatedTime += intervalDuration;
     }
     
+    // Check for upcoming interval change (3 seconds warning)
+    const currentInterval = this.intervals[this.currentIntervalIndex];
+    if (currentInterval) {
+      const elapsedInInterval = elapsedInRound - this.intervalStartTime;
+      const intervalRemaining = (currentInterval.duration * 1000) - elapsedInInterval;
+      const remainingSeconds = Math.ceil(intervalRemaining / 1000);
+      
+      // Announce next interval 3 seconds before it starts
+      if (remainingSeconds <= 3 && remainingSeconds > 0 && remainingSeconds !== this.lastWarningSecond) {
+        this.lastWarningSecond = remainingSeconds;
+        
+        // Check if this is the last interval of the entire workout
+        const isLastInterval = this.currentRound === this.rounds && 
+                              this.currentIntervalIndex === this.intervals.length - 1;
+        
+        if (!isLastInterval) {
+          // Get next interval (check if we're at the end of this round)
+          let nextInterval: Interval | null = null;
+          if (this.currentIntervalIndex < this.intervals.length - 1) {
+            // Next interval in same round
+            nextInterval = this.intervals[this.currentIntervalIndex + 1];
+          } else if (this.currentRound < this.rounds) {
+            // First interval of next round
+            nextInterval = this.intervals[0];
+          }
+          
+          if (remainingSeconds === 3 && nextInterval) {
+            // Announce what's coming next
+            this.soundManager.speak(`${nextInterval.name} in`);
+          }
+        }
+        
+        // Countdown beeps for 3-2-1
+        this.soundManager.playCountdownBeep(remainingSeconds);
+        this.soundManager.announceCountdown(remainingSeconds);
+      }
+      
+      // Play "GO" sound at the exact transition
+      if (intervalRemaining <= 100 && intervalRemaining > 0 && this.lastWarningSecond !== 0) {
+        this.lastWarningSecond = 0;
+        this.soundManager.playCountdownBeep(0); // This plays the "GO" sound
+      }
+    }
+    
     // Check if interval changed
     if (newIntervalIndex !== this.currentIntervalIndex) {
       this.currentIntervalIndex = newIntervalIndex;
+      this.lastWarningSecond = -1; // Reset warning counter
       const interval = this.intervals[this.currentIntervalIndex];
       this.emit('intervalStart', interval.name, interval.type);
       
-      // Play appropriate sound for interval type
+      // Play appropriate sound for interval type (but don't speak name again - we already announced it)
       if (interval.type === 'work') {
         this.soundManager.playWorkStartSound();
-        this.soundManager.speak(`${interval.name}`);
         this.emit('workStart');
       } else if (interval.type === 'rest') {
         this.soundManager.playRestStartSound();
-        this.soundManager.speak(`${interval.name}`);
         this.emit('restStart');
       } else if (interval.type === 'prep') {
         this.soundManager.playBeep(700, 150, 0.3); // Medium pitch for prep
-        this.soundManager.speak(`${interval.name}`);
         this.emit('prepStart');
       }
     }
@@ -95,7 +147,9 @@ export class IntervalsTimer extends Timer {
     if (newRound !== this.currentRound && newRound <= this.rounds) {
       this.currentRound = newRound;
       this.currentIntervalIndex = -1; // Reset so first interval triggers
+      this.lastWarningSecond = -1; // Reset warning counter for new round
       this.emit('roundStart', this.currentRound);
+      this.soundManager.announceRound(this.currentRound);
     }
   }
   
@@ -145,5 +199,6 @@ export class IntervalsTimer extends Timer {
     this.currentIntervalIndex = 0;
     this.intervalStartTime = 0;
     this.hasStartedFirstInterval = false;
+    this.lastWarningSecond = -1;
   }
 }

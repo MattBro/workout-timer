@@ -1,14 +1,37 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { createTimer, TimerSnapshot, TimerState, CountdownWrapper } from '@workout-timer/core';
-import { TimerConfig } from '../hooks/useTimerConfig';
+/**
+ * Timer Context - Core state management for the timer application
+ * @module TimerContext
+ */
 
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createTimer, TimerState, CountdownWrapper } from '@workout-timer/core';
+import { TimerConfig } from '../hooks/useTimerConfig';
+import { Timer, ExtendedTimerSnapshot, TimerError, TimerErrorType } from '../types/timer.types';
+
+/**
+ * Timer context value interface
+ * @interface TimerContextValue
+ */
 export interface TimerContextValue {
-  timer: any | null;
-  snapshot: TimerSnapshot | null;
+  /** Timer instance */
+  timer: Timer | null;
+  /** Current timer snapshot */
+  snapshot: ExtendedTimerSnapshot | null;
+  /** Current timer type */
   timerType: string;
+  /** Round counter for AMRAP */
   roundCount: number;
+  /** Loading state */
+  isLoading: boolean;
+  /** Error state */
+  error: TimerError | null;
+  /** Handle round completion */
   handleRoundComplete: () => void;
+  /** Reset round counter */
   resetRoundCount: () => void;
+  /** Clear error state */
+  clearError: () => void;
+  /** Timer configuration */
   config: TimerConfig;
 }
 
@@ -37,32 +60,38 @@ export function TimerProvider({
   countdownEnabled = true,
   countdownTime = 10
 }: TimerProviderProps) {
-  const [timer, setTimer] = useState<any>(null);
-  const [snapshot, setSnapshot] = useState<TimerSnapshot | null>(null);
+  const [timer, setTimer] = useState<Timer | null>(null);
+  const [snapshot, setSnapshot] = useState<ExtendedTimerSnapshot | null>(null);
   const [roundCount, setRoundCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<TimerError | null>(null);
 
   useEffect(() => {
-    // Clean up previous timer
-    if (timer) {
-      timer.reset();
-    }
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // Clean up previous timer
+      if (timer) {
+        timer.reset();
+      }
 
-    // Create new timer based on config
-    let newTimer = createTimer(config as any);
-    
-    // Wrap with countdown if enabled
-    if (countdownEnabled && countdownTime > 0) {
-      newTimer = new CountdownWrapper(newTimer, countdownTime);
-    }
-    
-    // Set up event listeners
-    newTimer.on('tick', (snap: TimerSnapshot) => {
-      setSnapshot(snap);
-    });
-    
-    newTimer.on('stateChange', () => {
-      setSnapshot(newTimer.getSnapshot());
-    });
+      // Create new timer based on config
+      let newTimer = createTimer(config as any) as Timer;
+      
+      // Wrap with countdown if enabled
+      if (countdownEnabled && countdownTime > 0) {
+        newTimer = new CountdownWrapper(newTimer, countdownTime) as Timer;
+      }
+      
+      // Set up event listeners
+      newTimer.on('tick', (snap: ExtendedTimerSnapshot) => {
+        setSnapshot(snap);
+      });
+      
+      newTimer.on('stateChange', () => {
+        setSnapshot(newTimer.getSnapshot());
+      });
 
     newTimer.on('finish', () => {
       // Timer finished
@@ -85,16 +114,27 @@ export function TimerProvider({
       newTimer.setSoundEnabled(soundEnabled);
     }
 
-    setTimer(newTimer);
-    setSnapshot(newTimer.getSnapshot());
-    setRoundCount(0);
+      setTimer(newTimer);
+      setSnapshot(newTimer.getSnapshot());
+      setRoundCount(0);
+      setIsLoading(false);
 
-    // Cleanup
-    return () => {
-      if (newTimer) {
-        newTimer.reset();
-      }
-    };
+      // Cleanup
+      return () => {
+        if (newTimer) {
+          newTimer.reset();
+        }
+      };
+    } catch (err) {
+      const timerError = new TimerError(
+        'Failed to initialize timer',
+        TimerErrorType.INITIALIZATION_ERROR,
+        err as Error
+      );
+      setError(timerError);
+      setIsLoading(false);
+      console.error('Timer initialization error:', err);
+    }
   }, [config, countdownEnabled, countdownTime]);
 
   useEffect(() => {
@@ -118,13 +158,20 @@ export function TimerProvider({
     setRoundCount(0);
   };
 
+  const clearError = () => {
+    setError(null);
+  };
+
   const value: TimerContextValue = {
     timer,
     snapshot,
     timerType: config.type,
     roundCount,
+    isLoading,
+    error,
     handleRoundComplete,
     resetRoundCount,
+    clearError,
     config,
   };
 
