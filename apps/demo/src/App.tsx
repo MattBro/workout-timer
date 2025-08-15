@@ -8,6 +8,8 @@
 
 import React, { useState } from 'react';
 import { TimerProvider } from './contexts/TimerContext';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { TimerErrorBoundary } from './components/ErrorBoundary';
 import { TimerScreen } from './components/TimerScreen';
 import { useTimerConfig } from './hooks/useTimerConfig';
 
@@ -32,7 +34,7 @@ const TABATA_PRESETS = [
   { name: 'Endurance', workTime: 45, restTime: 15, rounds: 6 }
 ];
 
-function App() {
+function AppContent() {
   const [showSettings, setShowSettings] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
   
@@ -348,6 +350,20 @@ function App() {
         </div>
       </div>
     </TimerProvider>
+  );
+}
+
+/**
+ * Main App Component
+ * Wrapped with providers and error boundaries
+ */
+function App() {
+  return (
+    <TimerErrorBoundary>
+      <ThemeProvider defaultTheme="charcoal">
+        <AppContent />
+      </ThemeProvider>
+    </TimerErrorBoundary>
   );
 }
 

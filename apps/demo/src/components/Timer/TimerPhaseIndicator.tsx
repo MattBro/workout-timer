@@ -1,10 +1,20 @@
+/**
+ * Timer Phase Indicator Component - Shows current phase and round info
+ * @module TimerPhaseIndicator
+ */
+
 import React from 'react';
 import { useTimerContext } from '../../contexts/TimerContext';
 import { useTimerDisplay } from '../../hooks/useTimerDisplay';
+import { ForTimeConfig, TabataConfig } from '../../hooks/useTimerConfig';
 
-export function TimerPhaseIndicator() {
+/**
+ * Timer Phase Indicator Component
+ * Memoized for performance
+ */
+export const TimerPhaseIndicator = React.memo(function TimerPhaseIndicator() {
   const { snapshot, timerType, roundCount, handleRoundComplete, config } = useTimerContext();
-  const { phaseInfo, roundInfo } = useTimerDisplay(snapshot, timerType);
+  const { phaseInfo, roundInfo } = useTimerDisplay(snapshot, timerType, roundCount);
 
   if (!snapshot) return null;
 
@@ -27,12 +37,12 @@ export function TimerPhaseIndicator() {
         )}
         
         {timerType === 'intervals' && snapshot.currentRound && (
-          <div>Round {snapshot.currentRound} of {(snapshot as any).totalRounds || 1}</div>
+          <div>Round {snapshot.currentRound} of {snapshot.totalRounds || 1}</div>
         )}
         
         {timerType === 'forTime' && (
           <div>
-            <div>Round {snapshot.currentRound} of {(config as any).rounds || 3}</div>
+            <div>Round {snapshot.currentRound} of {(config as ForTimeConfig).rounds || 3}</div>
             <button
               onClick={handleRoundComplete}
               className="mt-2 px-4 py-2 bg-white/20 rounded-xl text-sm font-medium hover:bg-white/30 transition-all"
@@ -42,12 +52,12 @@ export function TimerPhaseIndicator() {
           </div>
         )}
         
-        {timerType === 'tabata' && (snapshot as any).currentSet > 1 && (
+        {timerType === 'tabata' && snapshot.currentSet && snapshot.currentSet > 1 && (
           <div className="text-sm mt-1">
-            Set {(snapshot as any).currentSet} of {(config as any).sets || 1}
+            Set {snapshot.currentSet} of {(config as TabataConfig).sets || 1}
           </div>
         )}
       </div>
     </>
   );
-}
+});

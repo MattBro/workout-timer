@@ -1,10 +1,19 @@
+/**
+ * Timer Progress Component - Shows progress bar
+ * @module TimerProgress
+ */
+
 import React from 'react';
 import { useTimerContext } from '../../contexts/TimerContext';
 import { useTimerDisplay } from '../../hooks/useTimerDisplay';
 
-export function TimerProgress() {
-  const { snapshot, timerType } = useTimerContext();
-  const { progress } = useTimerDisplay(snapshot, timerType);
+/**
+ * Timer Progress Bar Component
+ * Memoized for performance
+ */
+export const TimerProgress = React.memo(function TimerProgress() {
+  const { snapshot, timerType, roundCount } = useTimerContext();
+  const { progress } = useTimerDisplay(snapshot, timerType, roundCount);
 
   if (!snapshot) return null;
 
@@ -18,4 +27,4 @@ export function TimerProgress() {
       </div>
     </div>
   );
-}
+});

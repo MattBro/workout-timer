@@ -44,19 +44,19 @@ export class IntervalsTimer extends Timer {
     if (!this.hasStartedFirstInterval && this.intervals.length > 0) {
       this.hasStartedFirstInterval = true;
       const firstInterval = this.intervals[0];
+      
+      // Announce the first interval immediately
+      this.soundManager.speak(`Starting with ${firstInterval.name}`);
       this.emit('intervalStart', firstInterval.name, firstInterval.type);
       
       if (firstInterval.type === 'work') {
         this.soundManager.playWorkStartSound();
-        this.soundManager.speak(`${firstInterval.name}`);
         this.emit('workStart');
       } else if (firstInterval.type === 'rest') {
         this.soundManager.playRestStartSound();
-        this.soundManager.speak(`${firstInterval.name}`);
         this.emit('restStart');
       } else if (firstInterval.type === 'prep') {
         this.soundManager.playBeep(700, 150, 0.3);
-        this.soundManager.speak(`${firstInterval.name}`);
         this.emit('prepStart');
       }
     }
@@ -78,21 +78,27 @@ export class IntervalsTimer extends Timer {
       accumulatedTime += intervalDuration;
     }
     
-    // Check for upcoming interval change (3 seconds warning)
+    // Check for upcoming interval change (always do 3 seconds countdown)
     const currentInterval = this.intervals[this.currentIntervalIndex];
     if (currentInterval) {
       const elapsedInInterval = elapsedInRound - this.intervalStartTime;
       const intervalRemaining = (currentInterval.duration * 1000) - elapsedInInterval;
       const remainingSeconds = Math.ceil(intervalRemaining / 1000);
       
-      // Announce next interval 3 seconds before it starts
-      if (remainingSeconds <= 3 && remainingSeconds > 0 && remainingSeconds !== this.lastWarningSecond) {
+      // Determine countdown start point
+      // For intervals <= 3 seconds, start countdown immediately
+      // For longer intervals, start countdown at 3 seconds
+      const countdownThreshold = Math.min(currentInterval.duration, 3);
+      
+      // For ALL intervals, do a countdown (up to 3 seconds)
+      if (remainingSeconds <= countdownThreshold && remainingSeconds > 0 && remainingSeconds !== this.lastWarningSecond) {
         this.lastWarningSecond = remainingSeconds;
         
         // Check if this is the last interval of the entire workout
         const isLastInterval = this.currentRound === this.rounds && 
                               this.currentIntervalIndex === this.intervals.length - 1;
         
+        // Always announce what's coming next (unless it's the last interval)
         if (!isLastInterval) {
           // Get next interval (check if we're at the end of this round)
           let nextInterval: Interval | null = null;
@@ -105,31 +111,40 @@ export class IntervalsTimer extends Timer {
           }
           
           if (remainingSeconds === 3 && nextInterval) {
-            // Announce what's coming next
-            this.soundManager.speak(`${nextInterval.name} in`);
+            // Announce what's coming next at 3 seconds
+            this.soundManager.speak(`${nextInterval.name} coming up`);
           }
+        } else if (remainingSeconds === 3) {
+          // Last interval - announce finish
+          this.soundManager.speak(`Almost done`);
         }
         
-        // Countdown beeps for 3-2-1
+        // Always play countdown beeps for 3-2-1
         this.soundManager.playCountdownBeep(remainingSeconds);
+        
+        // Announce the countdown numbers (3, 2, 1)
         this.soundManager.announceCountdown(remainingSeconds);
       }
       
-      // Play "GO" sound at the exact transition
+      // Play "GO" sound at the exact transition (for non-last intervals)
       if (intervalRemaining <= 100 && intervalRemaining > 0 && this.lastWarningSecond !== 0) {
-        this.lastWarningSecond = 0;
-        this.soundManager.playCountdownBeep(0); // This plays the "GO" sound
+        const isLastInterval = this.currentRound === this.rounds && 
+                              this.currentIntervalIndex === this.intervals.length - 1;
+        if (!isLastInterval) {
+          this.lastWarningSecond = 0;
+          this.soundManager.playCountdownBeep(0); // This plays the "GO" sound
+        }
       }
     }
     
     // Check if interval changed
     if (newIntervalIndex !== this.currentIntervalIndex) {
       this.currentIntervalIndex = newIntervalIndex;
-      this.lastWarningSecond = -1; // Reset warning counter
+      this.lastWarningSecond = -1; // Reset warning counter for new interval
       const interval = this.intervals[this.currentIntervalIndex];
       this.emit('intervalStart', interval.name, interval.type);
       
-      // Play appropriate sound for interval type (but don't speak name again - we already announced it)
+      // Play appropriate sound for interval type
       if (interval.type === 'work') {
         this.soundManager.playWorkStartSound();
         this.emit('workStart');

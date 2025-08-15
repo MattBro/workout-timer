@@ -1,62 +1,44 @@
+/**
+ * Timer Display Hook - Handles timer display logic using strategy pattern
+ * @module useTimerDisplay
+ */
+
 import { useMemo } from 'react';
-import { TimerSnapshot, TimerState } from '@workout-timer/core';
+import { TimerState } from '@workout-timer/core';
+import { ExtendedTimerSnapshot, PhaseInfo, RoundInfo } from '../types/timer.types';
+import { TimerStrategyFactory } from '../strategies/TimerStrategy';
 
-function formatTime(ms: number): string {
-  const totalSeconds = Math.floor(ms / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-}
-
-export interface PhaseInfo {
-  text: string;
-  color: string;
-  icon?: string;
-}
-
+/**
+ * Custom hook for timer display logic
+ * Uses strategy pattern for timer-specific behavior
+ * 
+ * @param {ExtendedTimerSnapshot | null} snapshot - Current timer snapshot
+ * @param {string} timerType - Type of timer
+ * @param {number} roundCount - Round count for AMRAP
+ * @returns {Object} Display properties
+ */
 export function useTimerDisplay(
-  snapshot: TimerSnapshot | null,
-  timerType: string
+  snapshot: ExtendedTimerSnapshot | null,
+  timerType: string,
+  roundCount: number = 0
 ) {
+  const strategy = useMemo(
+    () => TimerStrategyFactory.getStrategy(timerType),
+    [timerType]
+  );
+
   const formattedTime = useMemo(() => {
     if (!snapshot) return '00:00';
-    
-    const snap: any = snapshot;
-    
-    // Handle countdown
-    if (snap.isCountdown) {
-      const seconds = Math.ceil(snap.countdownRemaining / 1000);
-      return seconds.toString();
-    }
-    
-    // Handle different timer types
-    if (timerType === 'forTime') {
-      return formatTime(snapshot.elapsed);
-    } else if (timerType === 'tabata' || timerType === 'intervals') {
-      return formatTime(snap.intervalRemaining || snapshot.remaining);
-    }
-    
-    return formatTime(snapshot.remaining);
-  }, [snapshot, timerType]);
+    return strategy.getDisplayTime(snapshot);
+  }, [snapshot, strategy]);
 
   const phaseInfo = useMemo((): PhaseInfo => {
     if (!snapshot) {
       return { text: 'Ready', color: 'gray' };
     }
     
-    const snap: any = snapshot;
-    
-    // Handle countdown
-    if (snap.isCountdown) {
-      return { 
-        text: 'GET READY!', 
-        color: 'yellow',
-        icon: '🚀' 
-      };
-    }
-    
-    // Handle states
-    if (snap.state === TimerState.FINISHED) {
+    // Handle common states
+    if (snapshot.state === TimerState.FINISHED) {
       return { 
         text: 'Complete!', 
         color: 'green',
@@ -64,7 +46,7 @@ export function useTimerDisplay(
       };
     }
     
-    if (snap.state === TimerState.PAUSED) {
+    if (snapshot.state === TimerState.PAUSED) {
       return { 
         text: 'Paused', 
         color: 'yellow',
@@ -72,73 +54,39 @@ export function useTimerDisplay(
       };
     }
     
-    if (snap.state === TimerState.IDLE) {
+    if (snapshot.state === TimerState.IDLE) {
       return { 
         text: 'Ready', 
         color: 'gray' 
       };
     }
     
-    // Handle timer-specific phases
-    if (timerType === 'tabata' && snap.isWorking !== undefined) {
-      return snap.isWorking 
-        ? { text: 'WORK', color: 'red', icon: '💪' }
-        : { text: 'REST', color: 'green', icon: '😌' };
-    }
-    
-    if (timerType === 'intervals' && snap.intervalName) {
-      const colors: Record<string, string> = {
-        work: 'red',
-        rest: 'green',
-        prep: 'yellow',
-      };
-      return { 
-        text: snap.intervalName.toUpperCase(), 
-        color: colors[snap.intervalType] || 'blue' 
-      };
-    }
-    
-    return { text: '', color: 'blue' };
-  }, [snapshot, timerType]);
+    // Use strategy for timer-specific phase
+    return strategy.getPhaseInfo(snapshot);
+  }, [snapshot, strategy]);
 
   const progress = useMemo(() => {
     return snapshot?.progress || 0;
   }, [snapshot]);
 
-  const roundInfo = useMemo(() => {
+  const roundInfo = useMemo((): RoundInfo | null => {
     if (!snapshot) return null;
-    
-    const snap: any = snapshot;
-    
-    if (timerType === 'amrap') {
-      return { current: snap.rounds || 0, total: null };
-    }
-    
-    if (timerType === 'emom' || timerType === 'tabata' || timerType === 'intervals') {
-      return { 
-        current: snap.currentRound || 0, 
-        total: snap.totalRounds || 0 
-      };
-    }
-    
-    if (timerType === 'forTime') {
-      return { 
-        current: snap.currentRound || 0, 
-        total: snap.totalRounds || 0 
-      };
-    }
-    
-    return null;
-  }, [snapshot, timerType]);
+    return strategy.getRoundInfo(snapshot, roundCount);
+  }, [snapshot, strategy, roundCount]);
 
   const isCountdown = useMemo(() => {
-    return (snapshot as any)?.isCountdown || false;
+    return snapshot?.isCountdown || false;
   }, [snapshot]);
 
   const themeColor = useMemo(() => {
-    // Always use gray color scheme to match the matte design
-    return 'from-gray-700 to-gray-800';
-  }, [snapshot, timerType]);
+    // Use strategy theme color or default
+    return strategy.getThemeColor();
+  }, [strategy]);
+
+  const controlButtons = useMemo(() => {
+    if (!snapshot) return [];
+    return strategy.getControlButtons(snapshot);
+  }, [snapshot, strategy]);
 
   return {
     formattedTime,
@@ -147,5 +95,7 @@ export function useTimerDisplay(
     roundInfo,
     isCountdown,
     themeColor,
+    controlButtons,
+    strategy,
   };
 }
