@@ -136,43 +136,8 @@ export function useTimerDisplay(
   }, [snapshot]);
 
   const themeColor = useMemo(() => {
-    const colors: Record<string, string> = {
-      amrap: 'from-slate-600 to-slate-700',
-      emom: 'from-indigo-600 to-indigo-700',
-      tabata: 'from-rose-600 to-rose-700',
-      intervals: 'from-emerald-600 to-emerald-700',
-      forTime: 'from-amber-600 to-amber-700',
-    };
-    
-    // Override for special states
-    if (!snapshot) return colors[timerType] || 'from-gray-600 to-gray-700';
-    
-    if (snapshot.state === TimerState.FINISHED) {
-      return 'from-gray-700 to-gray-800';
-    }
-    
-    if (snapshot.state === TimerState.PAUSED) {
-      return 'from-amber-700 to-amber-800';
-    }
-    
-    // Phase-specific colors for certain timer types
-    const snap: any = snapshot;
-    if (timerType === 'tabata' && snap.isWorking !== undefined) {
-      return snap.isWorking 
-        ? 'from-rose-600 to-rose-700' 
-        : 'from-emerald-600 to-emerald-700';
-    }
-    
-    if (timerType === 'intervals' && snap.intervalType) {
-      const intervalColors: Record<string, string> = {
-        work: 'from-rose-600 to-rose-700',
-        rest: 'from-emerald-600 to-emerald-700',
-        prep: 'from-amber-600 to-amber-700',
-      };
-      return intervalColors[snap.intervalType] || colors[timerType];
-    }
-    
-    return colors[timerType] || 'from-gray-600 to-gray-700';
+    // Always use gray color scheme to match the matte design
+    return 'from-gray-700 to-gray-800';
   }, [snapshot, timerType]);
 
   return {

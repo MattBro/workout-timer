@@ -9,6 +9,7 @@ export interface TimerContextValue {
   roundCount: number;
   handleRoundComplete: () => void;
   resetRoundCount: () => void;
+  config: TimerConfig;
 }
 
 const TimerContext = createContext<TimerContextValue | null>(null);
@@ -124,6 +125,7 @@ export function TimerProvider({
     roundCount,
     handleRoundComplete,
     resetRoundCount,
+    config,
   };
 
   return (
