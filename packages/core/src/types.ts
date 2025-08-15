@@ -16,6 +16,8 @@ export interface TimerSnapshot {
   totalRounds?: number;
   currentInterval?: number;
   intervalRemaining?: number;
+  isCountdown?: boolean;
+  countdownRemaining?: number;
 }
 
 export interface TimerConfig {

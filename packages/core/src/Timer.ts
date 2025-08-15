@@ -1,4 +1,5 @@
 import { TimerState, TimerSnapshot, TimerConfig } from './types';
+import { SoundManager } from './utils/SoundManager';
 
 export abstract class Timer {
   protected state: TimerState = TimerState.IDLE;
@@ -7,11 +8,15 @@ export abstract class Timer {
   protected startTime?: number;
   protected pausedAt?: number;
   protected totalPausedTime: number = 0;
+  protected soundManager: SoundManager;
+  protected lastSecondAnnounced: number = -1;
   
   // Event listeners
   private listeners: Map<string, Set<Function>> = new Map();
   
-  constructor(protected config: TimerConfig) {}
+  constructor(protected config: TimerConfig) {
+    this.soundManager = new SoundManager();
+  }
   
   // Public API
   start(): void {
@@ -22,6 +27,7 @@ export abstract class Timer {
     this.state = TimerState.RUNNING;
     this.startTime = Date.now() - this.elapsed;
     this.startTicking();
+    this.soundManager.playStartSound();
     this.emit('start');
     this.emit('stateChange', this.state);
   }
@@ -32,6 +38,7 @@ export abstract class Timer {
     this.state = TimerState.PAUSED;
     this.pausedAt = Date.now();
     this.stopTicking();
+    this.soundManager.playPauseSound();
     this.emit('pause');
     this.emit('stateChange', this.state);
   }
@@ -45,6 +52,7 @@ export abstract class Timer {
     
     this.state = TimerState.RUNNING;
     this.startTicking();
+    this.soundManager.playResumeSound();
     this.emit('resume');
     this.emit('stateChange', this.state);
   }
@@ -56,6 +64,7 @@ export abstract class Timer {
     this.totalPausedTime = 0;
     this.startTime = undefined;
     this.pausedAt = undefined;
+    this.lastSecondAnnounced = -1;
     this.emit('reset');
     this.emit('stateChange', this.state);
   }
@@ -83,7 +92,15 @@ export abstract class Timer {
     if (!this.startTime) return;
     
     this.elapsed = Date.now() - this.startTime - this.totalPausedTime;
-    this.emit('tick', this.getSnapshot());
+    const snapshot = this.getSnapshot();
+    this.emit('tick', snapshot);
+    
+    // Play countdown beeps for last 3 seconds
+    const remainingSeconds = Math.floor(snapshot.remaining / 1000);
+    if (remainingSeconds <= 3 && remainingSeconds > 0 && remainingSeconds !== this.lastSecondAnnounced) {
+      this.soundManager.playCountdownBeep(remainingSeconds);
+      this.lastSecondAnnounced = remainingSeconds;
+    }
     
     if (this.isComplete()) {
       this.finish();
@@ -93,6 +110,8 @@ export abstract class Timer {
   protected finish(): void {
     this.stopTicking();
     this.state = TimerState.FINISHED;
+    this.soundManager.playFinishSound();
+    this.soundManager.announceFinish();
     this.emit('finish');
     this.emit('stateChange', this.state);
   }
@@ -124,5 +143,18 @@ export abstract class Timer {
   
   getElapsed(): number {
     return this.elapsed;
+  }
+  
+  // Sound control
+  setSoundEnabled(enabled: boolean): void {
+    this.soundManager.setEnabled(enabled);
+  }
+  
+  isSoundEnabled(): boolean {
+    return this.soundManager.isEnabled();
+  }
+  
+  getSoundManager(): SoundManager {
+    return this.soundManager;
   }
 }
