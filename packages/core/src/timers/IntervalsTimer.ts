@@ -9,6 +9,7 @@ export class IntervalsTimer extends Timer {
   private intervalStartTime: number = 0;
   private totalDuration: number;
   private singleRoundDuration: number;
+  private hasStartedFirstInterval: boolean = false;
   
   constructor(config: IntervalsConfig) {
     super(config);
@@ -28,6 +29,27 @@ export class IntervalsTimer extends Timer {
   
   protected tick(): void {
     super.tick();
+    
+    // Play sound for first interval on first tick
+    if (!this.hasStartedFirstInterval && this.intervals.length > 0) {
+      this.hasStartedFirstInterval = true;
+      const firstInterval = this.intervals[0];
+      this.emit('intervalStart', firstInterval.name, firstInterval.type);
+      
+      if (firstInterval.type === 'work') {
+        this.soundManager.playWorkStartSound();
+        this.soundManager.speak(`${firstInterval.name}`);
+        this.emit('workStart');
+      } else if (firstInterval.type === 'rest') {
+        this.soundManager.playRestStartSound();
+        this.soundManager.speak(`${firstInterval.name}`);
+        this.emit('restStart');
+      } else if (firstInterval.type === 'prep') {
+        this.soundManager.playBeep(700, 150, 0.3);
+        this.soundManager.speak(`${firstInterval.name}`);
+        this.emit('prepStart');
+      }
+    }
     
     // Calculate position in current round
     const elapsedInRound = this.elapsed % this.singleRoundDuration;
@@ -51,6 +73,21 @@ export class IntervalsTimer extends Timer {
       this.currentIntervalIndex = newIntervalIndex;
       const interval = this.intervals[this.currentIntervalIndex];
       this.emit('intervalStart', interval.name, interval.type);
+      
+      // Play appropriate sound for interval type
+      if (interval.type === 'work') {
+        this.soundManager.playWorkStartSound();
+        this.soundManager.speak(`${interval.name}`);
+        this.emit('workStart');
+      } else if (interval.type === 'rest') {
+        this.soundManager.playRestStartSound();
+        this.soundManager.speak(`${interval.name}`);
+        this.emit('restStart');
+      } else if (interval.type === 'prep') {
+        this.soundManager.playBeep(700, 150, 0.3); // Medium pitch for prep
+        this.soundManager.speak(`${interval.name}`);
+        this.emit('prepStart');
+      }
     }
     
     // Update round
@@ -100,5 +137,13 @@ export class IntervalsTimer extends Timer {
   
   getIntervals(): Interval[] {
     return this.intervals;
+  }
+  
+  reset(): void {
+    super.reset();
+    this.currentRound = 1;
+    this.currentIntervalIndex = 0;
+    this.intervalStartTime = 0;
+    this.hasStartedFirstInterval = false;
   }
 }
