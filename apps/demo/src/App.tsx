@@ -36,6 +36,7 @@ const TABATA_PRESETS = [
 
 function AppContent() {
   const [showSettings, setShowSettings] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
   
   const {
@@ -155,7 +156,7 @@ function AppContent() {
               </div>
             </div>
             
-            <RoundSlider 
+            <RoundPicker 
               value={config.rounds}
               onChange={(rounds) => updateConfig({ rounds })}
               label="Rounds per Set"
@@ -163,7 +164,7 @@ function AppContent() {
               max={20}
             />
             
-            <RoundSlider 
+            <RoundPicker 
               value={config.sets || 1}
               onChange={(sets) => updateConfig({ sets })}
               label="Number of Sets"
@@ -201,12 +202,12 @@ function AppContent() {
       case 'intervals':
         return (
           <div className="space-y-6">
-            <RoundSlider 
+            <RoundPicker 
               value={config.rounds || 3}
               onChange={(rounds) => updateConfig({ rounds })}
               label="Number of Rounds"
               min={1}
-              max={10}
+              max={30}
             />
             
             <IntervalEditor 
@@ -281,63 +282,60 @@ function AppContent() {
               </div>
             </div>
             
-            {/* Countdown Settings */}
-            <div className="mb-6 bg-gray-700 rounded-xl p-6 shadow-inner">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">Pre-Timer Countdown</h3>
-                <button
-                  onClick={() => updateConfig({ 
-                    countdownEnabled: !config.countdownEnabled 
-                  })}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    config.countdownEnabled ? 'bg-gray-500' : 'bg-gray-600'
-                  }`}
+            {/* Advanced Settings Toggle - Very Subtle */}
+            <div className="mb-4">
+              <button
+                onClick={() => setShowAdvanced(!showAdvanced)}
+                className="text-xs text-gray-500 hover:text-gray-400 transition-colors flex items-center gap-1"
+              >
+                <svg 
+                  className={`w-3 h-3 transition-transform ${
+                    showAdvanced ? 'rotate-90' : ''
+                  }`} 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
                 >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      config.countdownEnabled ? 'translate-x-6' : 'translate-x-1'
-                    }`}
-                  />
-                </button>
-              </div>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+                Advanced
+              </button>
               
-              {config.countdownEnabled && (
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-gray-300">Countdown Duration</label>
-                  <div className="flex items-center justify-center gap-4">
-                    <button
-                      onClick={() => updateConfig({ 
-                        countdownTime: Math.max(0, (config.countdownTime || 10) - 5) 
-                      })}
-                      className="p-2 text-xl hover:bg-gray-600 rounded-lg shadow-md active:scale-95"
-                    >
-                      -5
-                    </button>
-                    <div className="text-3xl font-bold w-20 text-center">{config.countdownTime || 10}s</div>
-                    <button
-                      onClick={() => updateConfig({ 
-                        countdownTime: Math.min(60, (config.countdownTime || 10) + 5) 
-                      })}
-                      className="p-2 text-xl hover:bg-gray-600 rounded-lg shadow-md active:scale-95"
-                    >
-                      +5
-                    </button>
-                  </div>
-                  <div className="flex gap-2 justify-center flex-wrap mt-3">
-                    {[3, 5, 10, 15, 20].map((preset) => (
+              {/* Hidden Advanced Settings */}
+              {showAdvanced && (
+                <div className="mt-3 p-4 bg-gray-750 rounded-lg border border-gray-700">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-400">Pre-timer countdown</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-500">
+                        {config.countdownEnabled ? `${config.countdownTime || 10}s` : 'Off'}
+                      </span>
                       <button
-                        key={preset}
-                        onClick={() => updateConfig({ countdownTime: preset })}
-                        className={`px-3 py-1 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg active:scale-95 ${
-                          config.countdownTime === preset
-                            ? 'bg-gray-500 text-white shadow-lg'
-                            : 'bg-gray-600 hover:bg-gray-500'
+                        onClick={() => updateConfig({ 
+                          countdownEnabled: !config.countdownEnabled 
+                        })}
+                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                          config.countdownEnabled ? 'bg-gray-600' : 'bg-gray-700'
                         }`}
                       >
-                        {preset}s
+                        <span
+                          className={`inline-block h-3 w-3 transform rounded-full bg-gray-400 transition-transform ${
+                            config.countdownEnabled ? 'translate-x-5' : 'translate-x-1'
+                          }`}
+                        />
                       </button>
-                    ))}
+                    </div>
                   </div>
+                  
+                  {config.countdownEnabled && (
+                    <div className="mt-3">
+                      <ScrollableTimePicker 
+                        value={config.countdownTime || 10} 
+                        onChange={(time) => updateConfig({ countdownTime: time })}
+                        label=""
+                      />
+                    </div>
+                  )}
                 </div>
               )}
             </div>

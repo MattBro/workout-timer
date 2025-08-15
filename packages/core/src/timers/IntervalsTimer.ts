@@ -11,6 +11,7 @@ export class IntervalsTimer extends Timer {
   private singleRoundDuration: number;
   private hasStartedFirstInterval: boolean = false;
   private lastWarningSecond: number = -1;
+  private hasPlayedHalfway: boolean = false;
   
   constructor(config: IntervalsConfig) {
     super(config);
@@ -82,8 +83,19 @@ export class IntervalsTimer extends Timer {
     const currentInterval = this.intervals[this.currentIntervalIndex];
     if (currentInterval) {
       const elapsedInInterval = elapsedInRound - this.intervalStartTime;
-      const intervalRemaining = (currentInterval.duration * 1000) - elapsedInInterval;
+      const intervalDurationMs = currentInterval.duration * 1000;
+      const intervalRemaining = intervalDurationMs - elapsedInInterval;
       const remainingSeconds = Math.ceil(intervalRemaining / 1000);
+      
+      // Check for halfway point (only for intervals longer than 4 seconds)
+      if (currentInterval.duration > 4 && !this.hasPlayedHalfway) {
+        const halfwayPoint = intervalDurationMs / 2;
+        if (elapsedInInterval >= halfwayPoint && elapsedInInterval < halfwayPoint + 200) {
+          this.hasPlayedHalfway = true;
+          this.soundManager.playBeep(600, 100, 0.3); // Medium-low pitch ding
+          this.soundManager.speak('Halfway');
+        }
+      }
       
       // Determine countdown start point
       // For intervals <= 3 seconds, start countdown immediately
@@ -141,6 +153,7 @@ export class IntervalsTimer extends Timer {
     if (newIntervalIndex !== this.currentIntervalIndex) {
       this.currentIntervalIndex = newIntervalIndex;
       this.lastWarningSecond = -1; // Reset warning counter for new interval
+      this.hasPlayedHalfway = false; // Reset halfway flag for new interval
       const interval = this.intervals[this.currentIntervalIndex];
       this.emit('intervalStart', interval.name, interval.type);
       
@@ -163,6 +176,7 @@ export class IntervalsTimer extends Timer {
       this.currentRound = newRound;
       this.currentIntervalIndex = -1; // Reset so first interval triggers
       this.lastWarningSecond = -1; // Reset warning counter for new round
+      this.hasPlayedHalfway = false; // Reset halfway flag for new round
       this.emit('roundStart', this.currentRound);
       this.soundManager.announceRound(this.currentRound);
     }
@@ -215,5 +229,6 @@ export class IntervalsTimer extends Timer {
     this.intervalStartTime = 0;
     this.hasStartedFirstInterval = false;
     this.lastWarningSecond = -1;
+    this.hasPlayedHalfway = false;
   }
 }
