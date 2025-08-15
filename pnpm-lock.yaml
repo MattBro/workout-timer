@@ -29,6 +29,9 @@ importers:
       '@workout-timer/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@workout-timer/react':
+        specifier: workspace:*
+        version: link:../../packages/react
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -60,6 +63,34 @@ importers:
 
   packages/core:
     devDependencies:
+      tsup:
+        specifier: ^7.0.0
+        version: 7.3.0(postcss@8.5.6)(typescript@5.9.2)
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.2
+      vitest:
+        specifier: ^0.34.0
+        version: 0.34.6
+
+  packages/react:
+    dependencies:
+      '@workout-timer/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.23
+      '@types/react-dom':
+        specifier: ^18.2.0
+        version: 18.3.7(@types/react@18.3.23)
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
       tsup:
         specifier: ^7.0.0
         version: 7.3.0(postcss@8.5.6)(typescript@5.9.2)

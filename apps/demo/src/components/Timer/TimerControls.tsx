@@ -1,6 +1,6 @@
 import React from 'react';
 import { TimerState } from '@workout-timer/core';
-import { useTimerContext } from '../../contexts/TimerContext';
+import { useTimerContext } from '@workout-timer/react';
 
 export function TimerControls() {
   const { timer, snapshot, timerType, handleRoundComplete } = useTimerContext();

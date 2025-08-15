@@ -21,7 +21,6 @@ const PRESET_WORKOUTS = [
   {
     name: 'Classic HIIT',
     intervals: [
-      { name: 'Prepare', duration: 10, type: 'prep' as const },
       { name: 'High Intensity', duration: 30, type: 'work' as const },
       { name: 'Recovery', duration: 30, type: 'rest' as const }
     ]
@@ -29,7 +28,6 @@ const PRESET_WORKOUTS = [
   {
     name: 'Tabata Style',
     intervals: [
-      { name: 'Prepare', duration: 10, type: 'prep' as const },
       { name: 'Sprint', duration: 20, type: 'work' as const },
       { name: 'Rest', duration: 10, type: 'rest' as const }
     ]
@@ -37,7 +35,6 @@ const PRESET_WORKOUTS = [
   {
     name: 'Strength Circuit',
     intervals: [
-      { name: 'Warm Up', duration: 30, type: 'prep' as const },
       { name: 'Exercise', duration: 45, type: 'work' as const },
       { name: 'Transition', duration: 15, type: 'rest' as const }
     ]
@@ -45,7 +42,6 @@ const PRESET_WORKOUTS = [
   {
     name: 'Boxing Rounds',
     intervals: [
-      { name: 'Prepare', duration: 10, type: 'prep' as const },
       { name: 'Round', duration: 180, type: 'work' as const },
       { name: 'Break', duration: 60, type: 'rest' as const }
     ]
@@ -54,7 +50,17 @@ const PRESET_WORKOUTS = [
 
 export function IntervalEditor({ intervals, onChange }: IntervalEditorProps) {
   const addInterval = () => {
-    onChange([...intervals, { name: 'Work', duration: 30, type: 'work' as const }]);
+    // Smart default: alternate between work and rest
+    const lastInterval = intervals[intervals.length - 1];
+    const nextType = !lastInterval || lastInterval.type === 'rest' ? 'work' : 'rest';
+    const nextName = nextType === 'work' ? 'Work' : 'Rest';
+    const nextDuration = nextType === 'work' ? 30 : 15;
+    
+    onChange([...intervals, { 
+      name: nextName, 
+      duration: nextDuration, 
+      type: nextType as 'work' | 'rest' | 'prep' 
+    }]);
   };
 
   const removeInterval = (index: number) => {
@@ -96,12 +102,12 @@ export function IntervalEditor({ intervals, onChange }: IntervalEditorProps) {
       {/* Preset Templates */}
       <div>
         <label className="block text-sm font-medium mb-2 text-gray-300">Quick Templates</label>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {PRESET_WORKOUTS.map((preset) => (
             <button
               key={preset.name}
               onClick={() => applyPreset(preset)}
-              className="p-3 bg-gray-600/50 hover:bg-gray-500/50 rounded-lg text-sm transition-all shadow-md hover:shadow-lg active:scale-95"
+              className="p-2 sm:p-3 bg-gray-600/50 hover:bg-gray-500/50 rounded-lg text-xs sm:text-sm transition-all shadow-md hover:shadow-lg active:scale-95"
             >
               <div className="font-semibold">{preset.name}</div>
               <div className="text-xs text-gray-400 mt-1">
@@ -145,17 +151,17 @@ export function IntervalEditor({ intervals, onChange }: IntervalEditorProps) {
           return (
             <div
               key={index}
-              className="bg-gray-600/50 rounded-xl p-4 shadow-md"
+              className="bg-gray-600/50 rounded-xl p-3 sm:p-4 shadow-md"
             >
               {/* Header with type selector and move buttons */}
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl">{type.icon}</span>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+                <div className="flex items-center gap-2 flex-1">
+                  <span className="text-xl sm:text-2xl">{type.icon}</span>
                   <input
                     type="text"
                     value={interval.name}
                     onChange={(e) => updateInterval(index, 'name', e.target.value)}
-                    className="bg-gray-700 px-3 py-1 rounded-lg text-sm font-medium shadow-inner flex-1"
+                    className="bg-gray-700 px-2 sm:px-3 py-1 rounded-lg text-xs sm:text-sm font-medium shadow-inner flex-1"
                     placeholder="Interval name"
                   />
                 </div>
@@ -185,12 +191,12 @@ export function IntervalEditor({ intervals, onChange }: IntervalEditorProps) {
               </div>
 
               {/* Type selector pills */}
-              <div className="flex gap-2 mb-3">
+              <div className="flex gap-1 sm:gap-2 mb-3">
                 {INTERVAL_TYPES.map((t) => (
                   <button
                     key={t.id}
                     onClick={() => updateInterval(index, 'type', t.id)}
-                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-all ${
+                    className={`px-2 sm:px-3 py-1 rounded-lg text-xs sm:text-sm font-medium transition-all ${
                       interval.type === t.id
                         ? `${t.color} text-white shadow-lg`
                         : 'bg-gray-700 hover:bg-gray-600'
@@ -202,8 +208,8 @@ export function IntervalEditor({ intervals, onChange }: IntervalEditorProps) {
               </div>
 
               {/* Duration control */}
-              <div className="flex items-center gap-3">
-                <label className="text-sm text-gray-400">Duration:</label>
+              <div className="flex items-center gap-2 sm:gap-3">
+                <label className="text-xs sm:text-sm text-gray-400">Duration:</label>
                 <button
                   onClick={() => updateInterval(index, 'duration', Math.max(5, interval.duration - 5))}
                   className="p-2 text-lg hover:bg-gray-500 rounded-lg shadow-md active:scale-95"
@@ -217,7 +223,7 @@ export function IntervalEditor({ intervals, onChange }: IntervalEditorProps) {
                     const val = parseInt(e.target.value) || 0;
                     updateInterval(index, 'duration', Math.min(600, Math.max(1, val)));
                   }}
-                  className="text-2xl font-bold tabular-nums w-20 text-center bg-gray-700 rounded-lg shadow-inner px-2 py-1"
+                  className="text-xl sm:text-2xl font-bold tabular-nums w-16 sm:w-20 text-center bg-gray-700 rounded-lg shadow-inner px-1 sm:px-2 py-1"
                 />
                 <span className="text-lg text-gray-400">s</span>
                 <button

@@ -12,17 +12,45 @@ export class IntervalsTimer extends Timer {
   private hasStartedFirstInterval: boolean = false;
   private lastWarningSecond: number = -1;
   private hasPlayedHalfway: boolean = false;
+  private blocks: Array<{ name: string; intervals: Interval[]; rounds: number }> = [];
   
   constructor(config: IntervalsConfig) {
     super(config);
-    this.intervals = config.intervals;
-    this.rounds = config.rounds || 1;
     
-    // Calculate total duration
-    this.singleRoundDuration = this.intervals.reduce((sum, interval) => 
-      sum + (interval.duration * 1000), 0
-    );
-    this.totalDuration = this.singleRoundDuration * this.rounds;
+    // Check if we're using blocks mode
+    if ((config as any).useBlocks && (config as any).blocks && (config as any).blocks.length > 0) {
+      this.blocks = (config as any).blocks;
+      
+      // Flatten blocks into a single sequence
+      this.intervals = [];
+      let totalTime = 0;
+      
+      for (const block of this.blocks) {
+        for (let round = 0; round < block.rounds; round++) {
+          for (const interval of block.intervals) {
+            this.intervals.push({
+              ...interval,
+              name: `${block.name}: ${interval.name}`
+            });
+            totalTime += interval.duration * 1000;
+          }
+        }
+      }
+      
+      this.rounds = 1; // All rounds are baked into the intervals
+      this.singleRoundDuration = totalTime;
+      this.totalDuration = totalTime;
+    } else {
+      // Standard mode
+      this.intervals = config.intervals;
+      this.rounds = config.rounds || 1;
+      
+      // Calculate total duration
+      this.singleRoundDuration = this.intervals.reduce((sum, interval) => 
+        sum + (interval.duration * 1000), 0
+      );
+      this.totalDuration = this.singleRoundDuration * this.rounds;
+    }
   }
   
   isComplete(): boolean {

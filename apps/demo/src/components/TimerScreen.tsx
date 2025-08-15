@@ -1,6 +1,5 @@
 import React from 'react';
-import { useTimerContext } from '../contexts/TimerContext';
-import { useTimerDisplay } from '../hooks/useTimerDisplay';
+import { useTimerContext, useTimerDisplay } from '@workout-timer/react';
 import { TimerDisplay } from './Timer/TimerDisplay';
 import { TimerPhaseIndicator } from './Timer/TimerPhaseIndicator';
 import { TimerProgress } from './Timer/TimerProgress';
@@ -8,11 +7,12 @@ import { TimerControls } from './Timer/TimerControls';
 
 interface TimerScreenProps {
   onOpenSettings: () => void;
+  onClickTime?: () => void;
   soundEnabled: boolean;
   onToggleSound: () => void;
 }
 
-export function TimerScreen({ onOpenSettings, soundEnabled, onToggleSound }: TimerScreenProps) {
+export function TimerScreen({ onOpenSettings, onClickTime, soundEnabled, onToggleSound }: TimerScreenProps) {
   const { snapshot, timerType } = useTimerContext();
   const { themeColor } = useTimerDisplay(snapshot, timerType);
 
@@ -40,7 +40,7 @@ export function TimerScreen({ onOpenSettings, soundEnabled, onToggleSound }: Tim
       {/* Center Timer Display */}
       <div className="flex-1 flex flex-col items-center justify-center px-6">
         <TimerPhaseIndicator />
-        <TimerDisplay />
+        <TimerDisplay onClick={onClickTime} />
         <TimerProgress />
       </div>
 

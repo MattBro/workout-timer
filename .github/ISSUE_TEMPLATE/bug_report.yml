@@ -1,0 +1,146 @@
+name: Bug Report
+description: Report a bug or unexpected behavior
+title: "[Bug]: "
+labels: ["bug", "triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this bug! Please fill out the information below to help us fix it.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is
+      placeholder: When I try to start a Tabata timer with custom intervals, the countdown doesn't work properly...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the behavior
+      placeholder: |
+        1. Import useTimer hook
+        2. Configure timer with type 'tabata'
+        3. Set workTime to 30 seconds
+        4. Call timer.start()
+        5. Observe that...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What you expected to happen
+      placeholder: The timer should count down from 30 seconds...
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened
+      placeholder: The timer starts at 0 and counts up instead...
+    validations:
+      required: true
+
+  - type: textarea
+    id: code
+    attributes:
+      label: Code Example
+      description: If applicable, add code to help explain your problem
+      render: tsx
+      placeholder: |
+        const timer = useTimer({
+          type: 'tabata',
+          workTime: 30,
+          restTime: 10,
+          rounds: 8
+        });
+
+  - type: dropdown
+    id: package
+    attributes:
+      label: Package
+      description: Which package is affected?
+      options:
+        - "@workout-timer/core"
+        - "@workout-timer/react"
+        - "@workout-timer/react-ui"
+        - "Demo app"
+        - "Documentation"
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Package Version
+      description: What version of the package are you using?
+      placeholder: 1.0.0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: framework
+    attributes:
+      label: Framework
+      description: Which framework are you using?
+      options:
+        - React 18
+        - React 17
+        - React 16
+        - Next.js
+        - Remix
+        - Vite
+        - Create React App
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      description: Which browser(s) are affected?
+      multiple: true
+      options:
+        - Chrome
+        - Firefox
+        - Safari
+        - Edge
+        - Mobile Safari
+        - Chrome Mobile
+        - Samsung Internet
+        - Other
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating System
+      description: What OS are you using?
+      placeholder: macOS 14.1, Windows 11, Ubuntu 22.04
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context, screenshots, or information about the problem here
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched for existing issues
+          required: true
+        - label: I have tested with the latest version
+          required: true
+        - label: I have provided all required information above
+          required: true

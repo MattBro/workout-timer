@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { useTimerContext } from '../../contexts/TimerContext';
+import { useTimerContext } from '@workout-timer/react';
 import { useTimerDisplay } from '../../hooks/useTimerDisplay';
 
 /**

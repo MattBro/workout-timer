@@ -1,7 +1,7 @@
 {
-  "name": "@workout-timer/core",
+  "name": "@workout-timer/react",
   "version": "0.0.1",
-  "description": "Core timer logic for workout timers",
+  "description": "React hooks and providers for workout timers",
   "author": "Matthew Brooker",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -23,10 +23,21 @@
     "dev": "tsup --watch",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
-    "lint": "eslint src --ext .ts",
+    "lint": "eslint src --ext .ts,.tsx",
     "typecheck": "tsc --noEmit"
   },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
+  "dependencies": {
+    "@workout-timer/core": "workspace:*"
+  },
   "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "tsup": "^7.0.0",
     "typescript": "^5.0.0",
     "vitest": "^0.34.0"

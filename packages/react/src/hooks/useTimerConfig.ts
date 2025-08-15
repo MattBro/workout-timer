@@ -24,14 +24,19 @@ export interface TabataConfig extends TimerConfigBase {
   restTime: number;
   rounds: number;
   sets?: number;
-  restBetweenSets?: number;
 }
 
 export interface IntervalsConfig extends TimerConfigBase {
   type: 'intervals';
-  // Always use blocks for intervals
-  useBlocks: true;
-  blocks: Array<{
+  intervals: Array<{
+    name: string;
+    duration: number;
+    type: 'work' | 'rest' | 'prep';
+  }>;
+  rounds?: number;
+  // Advanced mode with blocks
+  useBlocks?: boolean;
+  blocks?: Array<{
     id: string;
     name: string;
     intervals: Array<{
@@ -75,16 +80,12 @@ const DEFAULT_CONFIGS: Record<string, TimerConfig> = {
   },
   intervals: {
     type: 'intervals',
-    useBlocks: true,
-    blocks: [{
-      id: '1',
-      name: 'Workout',
-      intervals: [
-        { name: 'Work', duration: 30, type: 'work' },
-        { name: 'Rest', duration: 30, type: 'rest' },
-      ],
-      rounds: 5
-    }],
+    intervals: [
+      { name: 'Prepare', duration: 10, type: 'prep' },
+      { name: 'Work', duration: 45, type: 'work' },
+      { name: 'Rest', duration: 15, type: 'rest' },
+    ],
+    rounds: 3,
   },
   forTime: {
     type: 'forTime',
