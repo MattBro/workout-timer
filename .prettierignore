@@ -1,0 +1,23 @@
+# Ignore artifacts
+dist
+build
+coverage
+.next
+.nuxt
+.turbo
+
+# Ignore dependencies
+node_modules
+.pnpm-store
+
+# Ignore files
+*.min.js
+*.min.css
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+CHANGELOG.md
+
+# Ignore folders
+.changeset
+.github/workflows
