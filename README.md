@@ -6,11 +6,11 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![Tests](https://github.com/matthewbrooker/workout-timer/actions/workflows/ci.yml/badge.svg)](https://github.com/matthewbrooker/workout-timer/actions/workflows/ci.yml)
+[![Tests](https://github.com/MattBro/workout-timer/actions/workflows/ci.yml/badge.svg)](https://github.com/MattBro/workout-timer/actions/workflows/ci.yml)
 
 **A powerful, customizable, and headless workout timer library for React applications**
 
-[Demo](https://matthewbrooker.github.io/workout-timer) • [Documentation](#documentation) • [Examples](#examples) • [Contributing](CONTRIBUTING.md)
+[Demo](https://mattbro.github.io/workout-timer) • [Documentation](#documentation) • [Examples](#examples) • [Contributing](CONTRIBUTING.md)
 
 </div>
 
@@ -228,7 +228,7 @@ This monorepo contains three packages:
 
 ```bash
 # Clone the repository
-git clone https://github.com/matthewbrooker/workout-timer.git
+git clone https://github.com/MattBro/workout-timer.git
 cd workout-timer
 
 # Install dependencies
@@ -287,7 +287,7 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 ## 📄 License
 
-MIT © [Matt Brooker](https://github.com/matthewbrooker)
+MIT © [Matt Brooker](https://github.com/MattBro)
 
 ## 🙏 Acknowledgments
 
@@ -298,15 +298,15 @@ MIT © [Matt Brooker](https://github.com/matthewbrooker)
 
 ## 💬 Community
 
-- [GitHub Discussions](https://github.com/matthewbrooker/workout-timer/discussions)
-- [Report Issues](https://github.com/matthewbrooker/workout-timer/issues)
-- [Request Features](https://github.com/matthewbrooker/workout-timer/issues/new?template=feature_request.md)
+- [GitHub Discussions](https://github.com/MattBro/workout-timer/discussions)
+- [Report Issues](https://github.com/MattBro/workout-timer/issues)
+- [Request Features](https://github.com/MattBro/workout-timer/issues/new?template=feature_request.md)
 
 ## 📊 Stats
 
-![GitHub stars](https://img.shields.io/github/stars/matthewbrooker/workout-timer?style=social)
-![GitHub forks](https://img.shields.io/github/forks/matthewbrooker/workout-timer?style=social)
-![GitHub watchers](https://img.shields.io/github/watchers/matthewbrooker/workout-timer?style=social)
+![GitHub stars](https://img.shields.io/github/stars/MattBro/workout-timer?style=social)
+![GitHub forks](https://img.shields.io/github/forks/MattBro/workout-timer?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/MattBro/workout-timer?style=social)
 
 ---
 
