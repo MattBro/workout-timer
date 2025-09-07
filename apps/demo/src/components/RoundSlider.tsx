@@ -26,10 +26,12 @@ export function RoundSlider({ value, onChange, min = 1, max = 30, label }: Round
             min={min}
             max={max}
             value={value}
-            onChange={(e) => onChange(parseInt(e.target.value))}
+            onInput={(e) => onChange(parseInt((e.target as HTMLInputElement).value))}
+            onChange={(e) => onChange(parseInt((e.target as HTMLInputElement).value))}
             className="w-full h-3 bg-gray-600 rounded-lg appearance-none cursor-pointer shadow-inner slider"
             style={{
-              background: `linear-gradient(to right, #6b7280 0%, #6b7280 ${percentage}%, #4b5563 ${percentage}%, #4b5563 100%)`
+              background: `linear-gradient(to right, #6b7280 0%, #6b7280 ${percentage}%, #4b5563 ${percentage}%, #4b5563 100%)`,
+              touchAction: 'none'
             }}
           />
           <div className="flex justify-between text-xs text-gray-400 mt-2">

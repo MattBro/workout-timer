@@ -65,35 +65,17 @@ export function NumberPickerModal({
   
   const handleScroll = useCallback(() => {
     if (!scrollRef.current || isDragging.current) return;
-    
     clearTimeout(scrollTimeout.current);
-    
+
     const scrollTop = scrollRef.current.scrollTop;
     const index = Math.round(scrollTop / itemHeight);
     const newValue = Math.min(max, Math.max(min, min + index));
-    
-    if (newValue !== currentValue) {
-      setCurrentValue(newValue);
-    }
-    
-    // Snap to position after scrolling stops
+
+    // Debounce state update slightly during momentum scrolling
     scrollTimeout.current = setTimeout(() => {
-      if (scrollRef.current) {
-        const finalIndex = newValue - min;
-        const targetScroll = finalIndex * itemHeight;
-        const currentScroll = scrollRef.current.scrollTop;
-        const diff = Math.abs(currentScroll - targetScroll);
-        
-        // Only snap if we're close but not exact
-        if (diff > 2 && diff < itemHeight / 2) {
-          scrollRef.current.scrollTo({
-            top: targetScroll,
-            behavior: 'smooth'
-          });
-        }
-      }
-    }, 200);
-  }, [currentValue, min, max, itemHeight]);
+      setCurrentValue(newValue);
+    }, 50);
+  }, [min, max, itemHeight]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!scrollRef.current) return;
@@ -243,6 +225,8 @@ export function NumberPickerModal({
                 WebkitOverflowScrolling: 'touch',
                 userSelect: 'none',
                 WebkitUserSelect: 'none',
+                overscrollBehavior: 'contain',
+                scrollSnapType: 'y mandatory',
               }}
             >
               
@@ -274,7 +258,9 @@ export function NumberPickerModal({
                       height: itemHeight,
                       opacity,
                       transform: isSelected ? 'scale(1.1)' : 'scale(1)',
-                      transition: 'opacity 0.15s ease-out, transform 0.15s ease-out'
+                      transition: 'opacity 0.15s ease-out, transform 0.15s ease-out',
+                      scrollSnapAlign: 'center',
+                      scrollSnapStop: 'always',
                     }}
                     onClick={() => {
                       // Don't handle click if we were dragging

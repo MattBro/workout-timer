@@ -1,5 +1,5 @@
 import { Timer } from '../Timer';
-import { IntervalsConfig, TimerSnapshot, Interval } from '../types';
+import type { IntervalsConfig, TimerSnapshot, Interval } from '../types';
 
 export class IntervalsTimer extends Timer {
   private intervals: Interval[];
@@ -18,8 +18,9 @@ export class IntervalsTimer extends Timer {
     super(config);
     
     // Check if we're using blocks mode
-    if ((config as any).useBlocks && (config as any).blocks && (config as any).blocks.length > 0) {
-      this.blocks = (config as any).blocks;
+    const blocksConfig = config as unknown as { useBlocks?: boolean; blocks?: Array<{ name: string; intervals: Interval[]; rounds: number }>; };
+    if (blocksConfig.useBlocks && blocksConfig.blocks && blocksConfig.blocks.length > 0) {
+      this.blocks = blocksConfig.blocks;
       
       // Flatten blocks into a single sequence
       this.intervals = [];

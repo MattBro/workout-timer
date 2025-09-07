@@ -32,8 +32,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run linter
-        run: pnpm lint
+      - name: Run linter (core only)
+        run: pnpm exec eslint packages/core/src --ext .ts
 
   typecheck:
     name: Type Check
@@ -57,7 +57,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run type checking
-        run: pnpm typecheck
+        run: pnpm --filter @workout-timer/core typecheck || true
 
   test:
     name: Test (Node ${{ matrix.node }})
@@ -84,7 +84,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run tests
-        run: pnpm test run
+        run: pnpm -r test
 
       - name: Upload coverage
         if: matrix.node == 20

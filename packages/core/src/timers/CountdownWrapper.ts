@@ -1,5 +1,6 @@
 import { Timer } from '../Timer';
-import { TimerState, TimerSnapshot } from '../types';
+import { TimerState } from '../types';
+import type { TimerSnapshot, AMRAPConfig } from '../types';
 
 export class CountdownWrapper extends Timer {
   private countdownDuration: number;
@@ -8,7 +9,8 @@ export class CountdownWrapper extends Timer {
   private countdownElapsed: number = 0;
   
   constructor(timer: Timer, countdownSeconds: number = 10) {
-    super({ type: 'countdown' as any });
+    // Pass a dummy config to the base Timer; it's unused by the wrapper
+    super({ type: 'amrap', duration: 0 } as AMRAPConfig);
     this.wrappedTimer = timer;
     this.countdownDuration = countdownSeconds * 1000;
   }
@@ -69,11 +71,13 @@ export class CountdownWrapper extends Timer {
   }
   
   private forwardEvents(): void {
-    this.wrappedTimer.on('tick', (snapshot: TimerSnapshot) => {
+    this.wrappedTimer.on('tick', (...args: unknown[]) => {
+      const snapshot = args[0] as TimerSnapshot;
       this.emit('tick', snapshot);
     });
     
-    this.wrappedTimer.on('stateChange', (state: TimerState) => {
+    this.wrappedTimer.on('stateChange', (...args: unknown[]) => {
+      const state = args[0] as TimerState;
       this.state = state;
       this.emit('stateChange', state);
     });
@@ -82,7 +86,8 @@ export class CountdownWrapper extends Timer {
       this.emit('finish');
     });
     
-    this.wrappedTimer.on('roundStart', (round: number) => {
+    this.wrappedTimer.on('roundStart', (...args: unknown[]) => {
+      const round = args[0] as number;
       this.emit('roundStart', round);
     });
     
@@ -156,15 +161,13 @@ export class CountdownWrapper extends Timer {
   
   // Delegate methods to wrapped timer
   incrementRound(): void {
-    if ('incrementRound' in this.wrappedTimer) {
-      (this.wrappedTimer as any).incrementRound();
-    }
+    const maybe = this.wrappedTimer as { incrementRound?: () => void };
+    if (maybe.incrementRound) maybe.incrementRound();
   }
   
   completeRound(): void {
-    if ('completeRound' in this.wrappedTimer) {
-      (this.wrappedTimer as any).completeRound();
-    }
+    const maybe = this.wrappedTimer as { completeRound?: () => void };
+    if (maybe.completeRound) maybe.completeRound();
   }
   
   setSoundEnabled(enabled: boolean): void {

@@ -3,10 +3,12 @@
  * @module TimerContext
  */
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { createTimer, TimerState, CountdownWrapper } from '@workout-timer/core';
-import { TimerConfig } from '../hooks/useTimerConfig';
-import { Timer, ExtendedTimerSnapshot, TimerError, TimerErrorType } from '../types/timer.types';
+import { createContext, useContext, useState, useEffect } from 'react';
+import { createTimer, CountdownWrapper, Timer } from '@workout-timer/core';
+import type { TimerConfig } from '../hooks/useTimerConfig';
+import type { ExtendedTimerSnapshot } from '../types/timer.types';
+import { TimerError, TimerErrorType } from '../types/timer.types';
+import type { ReactNode } from 'react';
 
 /**
  * Timer context value interface
@@ -85,7 +87,8 @@ export function TimerProvider({
       }
       
       // Set up event listeners
-      newTimer.on('tick', (snap: ExtendedTimerSnapshot) => {
+      newTimer.on('tick', (...args: unknown[]) => {
+        const snap = args[0] as ExtendedTimerSnapshot;
         setSnapshot(snap);
       });
       
@@ -97,7 +100,8 @@ export function TimerProvider({
       // Timer finished
     });
 
-    newTimer.on('roundStart', (round: number) => {
+    newTimer.on('roundStart', (...args: unknown[]) => {
+      const round = args[0] as number;
       console.log(`Round ${round} started!`);
     });
     
@@ -135,6 +139,7 @@ export function TimerProvider({
       setIsLoading(false);
       console.error('Timer initialization error:', err);
     }
+    return undefined;
   }, [config, countdownEnabled, countdownTime]);
 
   useEffect(() => {
@@ -146,10 +151,10 @@ export function TimerProvider({
   const handleRoundComplete = () => {
     if (!timer) return;
     
-    if (config.type === 'amrap') {
+    if (config.type === 'amrap' && 'incrementRound' in timer && typeof timer.incrementRound === 'function') {
       timer.incrementRound();
       setRoundCount(prev => prev + 1);
-    } else if (config.type === 'forTime') {
+    } else if (config.type === 'forTime' && 'completeRound' in timer && typeof timer.completeRound === 'function') {
       timer.completeRound();
     }
   };

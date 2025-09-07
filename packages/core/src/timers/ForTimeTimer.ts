@@ -1,5 +1,6 @@
 import { Timer } from '../Timer';
-import { ForTimeConfig, TimerSnapshot, TimerState } from '../types';
+import type { ForTimeConfig, TimerSnapshot } from '../types';
+import { TimerState } from '../types';
 
 export class ForTimeTimer extends Timer {
   private timeCap: number;

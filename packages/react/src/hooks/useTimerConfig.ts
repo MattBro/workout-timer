@@ -106,7 +106,7 @@ export function useTimerConfig(initialType: string = 'amrap') {
     setConfig(prev => ({
       ...prev,
       ...updates,
-    }));
+    }) as TimerConfig);
   }, []);
 
   const resetConfig = useCallback(() => {

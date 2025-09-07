@@ -4,8 +4,8 @@
  * @module TimerStrategy
  */
 
-import { ExtendedTimerSnapshot } from '../types/timer.types';
-import { PhaseInfo, RoundInfo } from '../types/timer.types';
+import type { ExtendedTimerSnapshot } from '../types/timer.types';
+import type { PhaseInfo, RoundInfo } from '../types/timer.types';
 
 /**
  * Base Timer Strategy Interface
@@ -73,11 +73,11 @@ export class AMRAPStrategy implements ITimerStrategy {
     return { text: '', color: 'blue' };
   }
 
-  getRoundInfo(snapshot: ExtendedTimerSnapshot, roundCount: number = 0): RoundInfo {
+  getRoundInfo(_snapshot: ExtendedTimerSnapshot, roundCount: number = 0): RoundInfo {
     return { current: roundCount, total: null };
   }
 
-  getControlButtons(snapshot: ExtendedTimerSnapshot): ControlButton[] {
+  getControlButtons(_snapshot: ExtendedTimerSnapshot): ControlButton[] {
     return [
       {
         id: 'lap',
@@ -112,14 +112,14 @@ export class EMOMStrategy implements ITimerStrategy {
     return { text: 'EVERY MINUTE', color: 'blue' };
   }
 
-  getRoundInfo(snapshot: ExtendedTimerSnapshot): RoundInfo | null {
-    if (snapshot.currentRound && snapshot.totalRounds) {
-      return { current: snapshot.currentRound, total: snapshot.totalRounds };
+  getRoundInfo(_snapshot: ExtendedTimerSnapshot): RoundInfo | null {
+    if (_snapshot.currentRound && _snapshot.totalRounds) {
+      return { current: _snapshot.currentRound, total: _snapshot.totalRounds };
     }
     return null;
   }
 
-  getControlButtons(snapshot: ExtendedTimerSnapshot): ControlButton[] {
+  getControlButtons(_snapshot: ExtendedTimerSnapshot): ControlButton[] {
     return [
       {
         id: 'stop',
@@ -159,14 +159,14 @@ export class TabataStrategy implements ITimerStrategy {
     return { text: '', color: 'blue' };
   }
 
-  getRoundInfo(snapshot: ExtendedTimerSnapshot): RoundInfo | null {
-    if (snapshot.currentRound && snapshot.totalRounds) {
-      return { current: snapshot.currentRound, total: snapshot.totalRounds };
+  getRoundInfo(_snapshot: ExtendedTimerSnapshot): RoundInfo | null {
+    if (_snapshot.currentRound && _snapshot.totalRounds) {
+      return { current: _snapshot.currentRound, total: _snapshot.totalRounds };
     }
     return null;
   }
 
-  getControlButtons(snapshot: ExtendedTimerSnapshot): ControlButton[] {
+  getControlButtons(_snapshot: ExtendedTimerSnapshot): ControlButton[] {
     return [
       {
         id: 'stop',
@@ -201,14 +201,14 @@ export class ForTimeStrategy implements ITimerStrategy {
     return { text: 'FOR TIME', color: 'blue' };
   }
 
-  getRoundInfo(snapshot: ExtendedTimerSnapshot): RoundInfo | null {
-    if (snapshot.currentRound && snapshot.totalRounds) {
-      return { current: snapshot.currentRound, total: snapshot.totalRounds };
+  getRoundInfo(_snapshot: ExtendedTimerSnapshot): RoundInfo | null {
+    if (_snapshot.currentRound && _snapshot.totalRounds) {
+      return { current: _snapshot.currentRound, total: _snapshot.totalRounds };
     }
     return null;
   }
 
-  getControlButtons(snapshot: ExtendedTimerSnapshot): ControlButton[] {
+  getControlButtons(_snapshot: ExtendedTimerSnapshot): ControlButton[] {
     return [
       {
         id: 'next',
@@ -261,7 +261,7 @@ export class IntervalsStrategy implements ITimerStrategy {
     return null;
   }
 
-  getControlButtons(snapshot: ExtendedTimerSnapshot): ControlButton[] {
+  getControlButtons(_snapshot: ExtendedTimerSnapshot): ControlButton[] {
     return [
       {
         id: 'stop',

@@ -1,5 +1,5 @@
 import { Timer } from '../Timer';
-import { EMOMConfig, TimerSnapshot } from '../types';
+import type { EMOMConfig, TimerSnapshot } from '../types';
 
 export class EMOMTimer extends Timer {
   private rounds: number;

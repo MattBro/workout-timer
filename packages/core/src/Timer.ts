@@ -1,4 +1,5 @@
-import { TimerState, TimerSnapshot, TimerConfig } from './types';
+import { TimerState } from './types';
+import type { TimerSnapshot, TimerConfig } from './types';
 import { SoundManager } from './utils/SoundManager';
 
 export abstract class Timer {
@@ -12,7 +13,7 @@ export abstract class Timer {
   protected lastSecondAnnounced: number = -1;
   
   // Event listeners
-  private listeners: Map<string, Set<Function>> = new Map();
+  private listeners: Map<string, Set<(...args: unknown[]) => void>> = new Map();
   
   constructor(protected config: TimerConfig) {
     this.soundManager = new SoundManager();
@@ -121,18 +122,18 @@ export abstract class Timer {
   abstract getSnapshot(): TimerSnapshot;
   
   // Event system
-  on(event: string, callback: Function): void {
+  on(event: string, callback: (...args: unknown[]) => void): void {
     if (!this.listeners.has(event)) {
       this.listeners.set(event, new Set());
     }
     this.listeners.get(event)!.add(callback);
   }
   
-  off(event: string, callback: Function): void {
+  off(event: string, callback: (...args: unknown[]) => void): void {
     this.listeners.get(event)?.delete(callback);
   }
   
-  protected emit(event: string, ...args: any[]): void {
+  protected emit(event: string, ...args: unknown[]): void {
     this.listeners.get(event)?.forEach(callback => callback(...args));
   }
   

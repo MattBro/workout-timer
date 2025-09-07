@@ -37,8 +37,6 @@ export type { TimerSnapshot } from '@workout-timer/core';
 
 // Export timer types
 export type {
-  Timer,
-  ExtendedTimerSnapshot,
-  TimerError,
-  TimerErrorType
+  ExtendedTimerSnapshot
 } from './types/timer.types';
+export { TimerError, TimerErrorType } from './types/timer.types';

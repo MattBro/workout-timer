@@ -3,7 +3,7 @@
  * @module timer.types
  */
 
-import { TimerSnapshot as BaseTimerSnapshot, TimerState } from '@workout-timer/core';
+import { TimerSnapshot as BaseTimerSnapshot } from '@workout-timer/core';
 
 /**
  * Extended timer snapshot with additional fields for UI display
@@ -25,24 +25,6 @@ export interface ExtendedTimerSnapshot extends BaseTimerSnapshot {
   currentSet?: number;
   /** User-completed rounds (AMRAP) */
   rounds?: number;
-}
-
-/**
- * Timer instance interface
- * @interface Timer
- */
-export interface Timer {
-  start(): void;
-  pause(): void;
-  resume(): void;
-  reset(): void;
-  stop(): void;
-  getSnapshot(): ExtendedTimerSnapshot;
-  on(event: string, callback: Function): void;
-  off(event: string, callback: Function): void;
-  setSoundEnabled?(enabled: boolean): void;
-  incrementRound?(): void;
-  completeRound?(): void;
 }
 
 /**

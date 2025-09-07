@@ -5,7 +5,7 @@
 
 import { useMemo } from 'react';
 import { TimerState } from '@workout-timer/core';
-import { ExtendedTimerSnapshot, PhaseInfo, RoundInfo } from '../types/timer.types';
+import type { ExtendedTimerSnapshot, PhaseInfo, RoundInfo } from '../types/timer.types';
 import { TimerStrategyFactory } from '../strategies/TimerStrategy';
 
 /**
@@ -43,17 +43,6 @@ export function useTimerDisplay(
         text: 'Complete!', 
         color: 'green',
         icon: '🎉' 
-      };
-    }
-
-    // If remaining time has reached zero but state hasn't flipped yet,
-    // show Complete! immediately to avoid a lingering 00:00 frame.
-    if ((typeof snapshot.remaining === 'number' && snapshot.remaining <= 0) ||
-        (typeof (snapshot as any).intervalRemaining === 'number' && (snapshot as any).intervalRemaining <= 0)) {
-      return {
-        text: 'Complete!',
-        color: 'green',
-        icon: '🎉'
       };
     }
     

@@ -1,5 +1,5 @@
 import { Timer } from '../Timer';
-import { AMRAPConfig, TimerSnapshot } from '../types';
+import type { AMRAPConfig, TimerSnapshot } from '../types';
 
 export class AMRAPTimer extends Timer {
   private duration: number;

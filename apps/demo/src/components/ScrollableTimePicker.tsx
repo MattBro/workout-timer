@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 
 interface ScrollableTimePickerProps {
   value: number; // in seconds
@@ -14,30 +14,30 @@ export function ScrollableTimePicker({ value, onChange, label }: ScrollableTimeP
   const secondRef = useRef<HTMLDivElement>(null);
   
   const [isDragging, setIsDragging] = useState<'minutes' | 'seconds' | null>(null);
-  
+  const itemHeight = 48;
+  const clamp = (val: number, minVal: number, maxVal: number) => Math.max(minVal, Math.min(maxVal, val));
+  const debouncers = useRef<Record<string, any>>({});
+
   const handleScroll = (type: 'minutes' | 'seconds', element: HTMLDivElement) => {
-    const itemHeight = 48;
-    const scrollTop = element.scrollTop;
-    const index = Math.round(scrollTop / itemHeight);
-    
-    // Snap to the nearest value after scrolling stops
-    clearTimeout((element as any).scrollTimeout);
-    (element as any).scrollTimeout = setTimeout(() => {
-      element.scrollTop = index * itemHeight;
-    }, 50);
-    
+    const index = Math.round(element.scrollTop / itemHeight);
     if (type === 'minutes') {
-      const newMinutes = Math.max(0, Math.min(99, index));
-      onChange(newMinutes * 60 + seconds);
+      const newMinutes = clamp(index, 0, 99);
+      // Debounce updates slightly to avoid flooding while scrolling
+      clearTimeout(debouncers.current['minutes']);
+      debouncers.current['minutes'] = setTimeout(() => {
+        onChange(newMinutes * 60 + seconds);
+      }, 50);
     } else {
-      const newSeconds = Math.max(0, Math.min(59, index));
-      onChange(minutes * 60 + newSeconds);
+      const newSeconds = clamp(index, 0, 59);
+      clearTimeout(debouncers.current['seconds']);
+      debouncers.current['seconds'] = setTimeout(() => {
+        onChange(minutes * 60 + newSeconds);
+      }, 50);
     }
   };
   
   const scrollToValue = (element: HTMLDivElement | null, value: number) => {
     if (element) {
-      const itemHeight = 48;
       element.scrollTop = value * itemHeight;
     }
   };
@@ -46,6 +46,12 @@ export function ScrollableTimePicker({ value, onChange, label }: ScrollableTimeP
     scrollToValue(minuteRef.current, minutes);
     scrollToValue(secondRef.current, seconds);
   }, []);
+
+  const scrollContainerClasses = useMemo(
+    () =>
+      'h-36 w-16 overflow-y-scroll scrollbar-hide touch-pan-y overscroll-contain',
+    []
+  );
   
   const renderNumbers = (max: number, current: number) => {
     const numbers = [];
@@ -58,6 +64,7 @@ export function ScrollableTimePicker({ value, onChange, label }: ScrollableTimeP
               ? 'text-white font-bold scale-110'
               : 'text-gray-500'
           }`}
+          style={{ scrollSnapAlign: 'center' }}
         >
           {i.toString().padStart(2, '0')}
         </div>
@@ -80,10 +87,14 @@ export function ScrollableTimePicker({ value, onChange, label }: ScrollableTimeP
             
             <div
               ref={minuteRef}
-              className="h-36 w-16 overflow-y-scroll scrollbar-hide"
+              className={scrollContainerClasses}
               onScroll={(e) => handleScroll('minutes', e.currentTarget)}
               onTouchStart={() => setIsDragging('minutes')}
               onTouchEnd={() => setIsDragging(null)}
+              style={{
+                WebkitOverflowScrolling: 'touch',
+                scrollSnapType: 'y mandatory',
+              }}
             >
               <div className="py-12">
                 {renderNumbers(99, minutes)}
@@ -102,10 +113,14 @@ export function ScrollableTimePicker({ value, onChange, label }: ScrollableTimeP
             
             <div
               ref={secondRef}
-              className="h-36 w-16 overflow-y-scroll scrollbar-hide"
+              className={scrollContainerClasses}
               onScroll={(e) => handleScroll('seconds', e.currentTarget)}
               onTouchStart={() => setIsDragging('seconds')}
               onTouchEnd={() => setIsDragging(null)}
+              style={{
+                WebkitOverflowScrolling: 'touch',
+                scrollSnapType: 'y mandatory',
+              }}
             >
               <div className="py-12">
                 {renderNumbers(59, seconds)}

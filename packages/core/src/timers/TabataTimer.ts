@@ -1,5 +1,5 @@
 import { Timer } from '../Timer';
-import { TabataConfig, TimerSnapshot } from '../types';
+import type { TabataConfig, TimerSnapshot } from '../types';
 
 export class TabataTimer extends Timer {
   private workTime: number;

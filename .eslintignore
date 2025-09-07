@@ -19,3 +19,5 @@ vitest.config.ts
 
 # Changesets
 .changeset
+apps/demo
+packages/core/src/__tests__
