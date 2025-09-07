@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { NumberPickerModal } from './NumberPickerModal';
+import { NumberPickerModal } from '@workout-timer/ui';
 
 interface TappableTimeProps {
   value: number; // Total seconds

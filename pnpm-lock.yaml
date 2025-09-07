@@ -71,6 +71,9 @@ importers:
       '@workout-timer/react':
         specifier: workspace:*
         version: link:../../packages/react
+      '@workout-timer/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -121,8 +124,8 @@ importers:
   packages/react:
     dependencies:
       '@workout-timer/core':
-        specifier: workspace:*
-        version: link:../core
+        specifier: ^0.0.1
+        version: 0.0.1
     devDependencies:
       '@types/react':
         specifier: ^18.2.0
@@ -136,6 +139,40 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
+      tsup:
+        specifier: ^7.0.0
+        version: 7.3.0(postcss@8.5.6)(typescript@5.9.2)
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.2
+      vitest:
+        specifier: ^0.34.0
+        version: 0.34.6
+
+  packages/ui:
+    dependencies:
+      '@radix-ui/react-slider':
+        specifier: ^1.3.6
+        version: 1.3.6(@types/react-dom@18.3.7(@types/react@18.3.23))(@types/react@18.3.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@workout-timer/react':
+        specifier: workspace:*
+        version: link:../react
+      react:
+        specifier: '>=16.8.0'
+        version: 18.3.1
+      react-dom:
+        specifier: '>=16.8.0'
+        version: 18.3.1(react@18.3.1)
+      react-mobile-picker:
+        specifier: ^1.2.0
+        version: 1.2.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.23
+      '@types/react-dom':
+        specifier: ^18.2.0
+        version: 18.3.7(@types/react@18.3.23)
       tsup:
         specifier: ^7.0.0
         version: 7.3.0(postcss@8.5.6)(typescript@5.9.2)
@@ -1327,6 +1364,9 @@ packages:
 
   '@vitest/utils@0.34.6':
     resolution: {integrity: sha512-IG5aDD8S6zlvloDsnzHw0Ut5xczlF+kv2BOTo+iXfPr54Yhi5qbVOgGB1hZaVq4iJ4C/MZ2J0y15IlsV/ZcI0A==}
+
+  '@workout-timer/core@0.0.1':
+    resolution: {integrity: sha512-CTy24xuY+77LEONUHETaSIT92qVhXWhAecP80aSKng18QHfthPkP2dqNUGv/dlDMf9aPHHa3f+mfwdVGqYk42A==}
 
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -4274,6 +4314,8 @@ snapshots:
       diff-sequences: 29.6.3
       loupe: 2.3.7
       pretty-format: 29.7.0
+
+  '@workout-timer/core@0.0.1': {}
 
   acorn-jsx@5.3.2(acorn@8.15.0):
     dependencies:

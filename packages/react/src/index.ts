@@ -11,6 +11,7 @@ export { useTimerSound } from './hooks/useTimerSound';
 // Export contexts and providers
 export { TimerProvider, useTimerContext } from './contexts/TimerContext';
 export { ThemeProvider, useTheme } from './contexts/ThemeContext';
+// UI components
 
 // Export types
 export type {
