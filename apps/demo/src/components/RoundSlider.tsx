@@ -1,4 +1,5 @@
 import React from 'react';
+import * as Slider from '@radix-ui/react-slider';
 
 interface RoundSliderProps {
   value: number;
@@ -21,19 +22,23 @@ export function RoundSlider({ value, onChange, min = 1, max = 30, label }: Round
         </div>
         
         <div className="relative">
-          <input
-            type="range"
+          <Slider.Root
+            value={[value]}
             min={min}
             max={max}
-            value={value}
-            onInput={(e) => onChange(parseInt((e.target as HTMLInputElement).value))}
-            onChange={(e) => onChange(parseInt((e.target as HTMLInputElement).value))}
-            className="w-full h-3 bg-gray-600 rounded-lg appearance-none cursor-pointer shadow-inner slider"
-            style={{
-              background: `linear-gradient(to right, #6b7280 0%, #6b7280 ${percentage}%, #4b5563 ${percentage}%, #4b5563 100%)`,
-              touchAction: 'none'
-            }}
-          />
+            step={1}
+            onValueChange={(vals) => onChange(vals[0])}
+            className="relative flex items-center select-none touch-pan-x w-full h-8"
+            aria-label={label || 'Rounds'}
+          >
+            <Slider.Track className="bg-gray-700 relative grow rounded-full h-2">
+              <Slider.Range className="absolute h-full rounded-full bg-gray-400" />
+            </Slider.Track>
+            <Slider.Thumb
+              className="block w-6 h-6 bg-white rounded-full shadow-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400"
+              style={{ touchAction: 'none' }}
+            />
+          </Slider.Root>
           <div className="flex justify-between text-xs text-gray-400 mt-2">
             <span>{min}</span>
             <span>{max}</span>
