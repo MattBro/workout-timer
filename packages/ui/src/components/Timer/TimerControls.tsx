@@ -1,5 +1,4 @@
-import { TimerState } from '@workout-timer/core';
-import { useTimerContext } from '@workout-timer/react';
+import { useTimerContext, TimerState } from '@workout-timer/react';
 
 export function TimerControls() {
   const { timer, snapshot, timerType, handleRoundComplete } = useTimerContext();

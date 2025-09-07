@@ -11,4 +11,5 @@ export { ScrollableTimePicker, QuickTimeButtons } from './components/ScrollableT
 export { IntervalEditor } from './components/IntervalEditor';
 export { AdvancedIntervalEditor } from './components/AdvancedIntervalEditor';
 export { RoundPicker } from './components/RoundPicker';
+export { WorkoutTimer } from './components/WorkoutTimer';
 // TODO: export TimerScreen, TimerSettings, and other UI pieces as they are migrated

@@ -9,7 +9,6 @@
 import React, { useState } from 'react';
 import { TimerProvider, ThemeProvider } from '@workout-timer/react';
 import { TimerErrorBoundary } from './components/ErrorBoundary';
-import { TimerScreen } from './components/TimerScreen';
 import { useTimerConfig } from '@workout-timer/react';
 
 // Import existing settings components (reuse from current implementation)
