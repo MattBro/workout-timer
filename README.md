@@ -44,26 +44,30 @@ yarn add @workout-timer/react
 pnpm add @workout-timer/react
 ```
 
+This installs `@workout-timer/react` and pulls `@workout-timer/core` automatically.
+
 ### Basic Usage
 
 ```tsx
-import { useTimer } from '@workout-timer/react';
+import { TimerProvider, useTimerContext, useTimerDisplay, useTimerConfig } from '@workout-timer/react';
 
-function MyTimer() {
-  const timer = useTimer({
-    type: 'amrap',
-    duration: 300, // 5 minutes
-    countdown: 10  // 10 second countdown
-  });
-
+function TimerView() {
+  const { snapshot, timerType, roundCount } = useTimerContext();
+  const { formattedTime, phaseInfo } = useTimerDisplay(snapshot, timerType, roundCount);
   return (
     <div>
-      <h1>{timer.formattedTime}</h1>
-      <p>State: {timer.state}</p>
-      <button onClick={timer.start}>Start</button>
-      <button onClick={timer.pause}>Pause</button>
-      <button onClick={timer.reset}>Reset</button>
+      <h1>{formattedTime}</h1>
+      <p>{phaseInfo.text}</p>
     </div>
+  );
+}
+
+export default function MyTimer() {
+  const { config } = useTimerConfig('amrap');
+  return (
+    <TimerProvider config={config} countdownEnabled countdownTime={10}>
+      <TimerView />
+    </TimerProvider>
   );
 }
 ```
@@ -246,6 +250,51 @@ pnpm test
 # Type checking
 pnpm typecheck
 ```
+
+### Using In Another Project
+
+- Install from npm (recommended):
+  - `pnpm add @workout-timer/react`
+  - Requires `react` and `react-dom` in your app.
+- Local development (fast iteration without publishing):
+  - Link locally: `pnpm add link:../workout-timer/packages/react`
+  - In this repo, run watchers: `pnpm --filter @workout-timer/core dev` and `pnpm --filter @workout-timer/react dev`
+  - For deploys, prefer a published version or a packed tarball.
+- Tarball (no registry):
+  - `pnpm --filter @workout-timer/react build && pnpm --filter @workout-timer/react pack`
+  - In your app: `pnpm add /path/to/@workout-timer-react-*.tgz`
+
+### Release & Publishing
+
+This repo uses Changesets. Scoped packages publish under the npm org `@workout-timer`.
+
+1) Ensure npm org exists and you’re logged in with publish rights: `npm login`
+
+2) Create a changeset (select package and version bump):
+```bash
+pnpm changeset
+```
+
+3) Version packages (updates versions and changelogs):
+```bash
+pnpm changeset version
+```
+
+4) Commit and publish:
+```bash
+git add -A && git commit -m "chore(release): version packages"
+pnpm release   # runs build and changeset publish
+git push --follow-tags origin main
+```
+
+Notes:
+- For pre-releases: `changeset publish --tag next` and install `@workout-timer/react@next`.
+- Inside the monorepo we use `workspace:*` to link packages; external consumers install from npm.
+
+### UX Note: Countdown Display
+
+- Remaining time shows the starting value for one full second, then decrements each second (e.g., 05:00 → 04:59 …).
+- At 0, the UI immediately shows “Complete!” without lingering on 00:00.
 
 ### Project Structure
 
