@@ -1,20 +1,12 @@
 /**
  * Timer Display Component - Shows the timer countdown/countup
- * @module TimerDisplay
  */
-
-import React from 'react';
+import { memo } from 'react';
 import { useTimerContext, useTimerDisplay } from '@workout-timer/react';
 
-interface TimerDisplayProps {
-  onClick?: () => void;
-}
+export interface TimerDisplayProps { onClick?: () => void }
 
-/**
- * Timer Display Component
- * Memoized for performance
- */
-export const TimerDisplay = React.memo(function TimerDisplay({ onClick }: TimerDisplayProps) {
+export const TimerDisplay = memo(function TimerDisplay({ onClick }: TimerDisplayProps) {
   const { snapshot, timerType, roundCount } = useTimerContext();
   const { formattedTime, isCountdown } = useTimerDisplay(snapshot, timerType, roundCount);
 
@@ -29,7 +21,7 @@ export const TimerDisplay = React.memo(function TimerDisplay({ onClick }: TimerD
           ? 'text-9xl md:text-[12rem]' 
           : 'text-7xl md:text-9xl'
       }`}
-      title={onClick ? "Click to edit timer settings" : undefined}
+      title={onClick ? 'Click to edit timer settings' : undefined}
     >
       {formattedTime}
     </button>

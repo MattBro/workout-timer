@@ -13,13 +13,9 @@ import { TimerScreen } from './components/TimerScreen';
 import { useTimerConfig } from '@workout-timer/react';
 
 // Import existing settings components (reuse from current implementation)
-import { ScrollableTimePicker, QuickTimeButtons } from './components/ScrollableTimePicker';
-import { RoundSlider } from '@workout-timer/ui';
-import { RoundPicker } from './components/RoundPicker';
-import { IntervalEditor } from './components/IntervalEditor';
-import { AdvancedIntervalEditor, IntervalBlock } from './components/AdvancedIntervalEditor';
-import { TappableNumber } from './components/TappableNumber';
-import { TappableTime } from './components/TappableTime';
+import { ScrollableTimePicker, QuickTimeButtons, RoundSlider, RoundPicker, IntervalEditor, AdvancedIntervalEditor, TappableNumber, TappableTime } from '@workout-timer/ui';
+import type { IntervalBlock } from '@workout-timer/ui';
+import { TimerScreen } from '@workout-timer/ui';
 
 const TIMER_TYPES = [
   { id: 'amrap', name: 'AMRAP', icon: '🔄' },

@@ -1,44 +1,26 @@
-/**
- * Timer Phase Indicator Component - Shows current phase and round info
- * @module TimerPhaseIndicator
- */
-
-import React from 'react';
+import { memo } from 'react';
 import { useTimerContext, useTimerDisplay } from '@workout-timer/react';
-import { ForTimeConfig, TabataConfig } from '../../hooks/useTimerConfig';
+import type { ForTimeConfig, TabataConfig } from '@workout-timer/react';
 
-/**
- * Timer Phase Indicator Component
- * Memoized for performance
- */
-export const TimerPhaseIndicator = React.memo(function TimerPhaseIndicator() {
+export const TimerPhaseIndicator = memo(function TimerPhaseIndicator() {
   const { snapshot, timerType, roundCount, handleRoundComplete, config } = useTimerContext();
-  const { phaseInfo, roundInfo } = useTimerDisplay(snapshot, timerType, roundCount);
-
+  const { phaseInfo } = useTimerDisplay(snapshot, timerType, roundCount);
   if (!snapshot) return null;
 
   return (
     <>
-      {/* Phase Text */}
       <div className="text-2xl md:text-4xl font-bold mb-4 animate-pulse">
         {phaseInfo.icon && <span>{phaseInfo.icon} </span>}
         {phaseInfo.text}
       </div>
-
-      {/* Round Info */}
       <div className="text-xl md:text-2xl opacity-90">
-        {timerType === 'amrap' && (
-          <div>Rounds: {roundCount}</div>
-        )}
-        
+        {timerType === 'amrap' && (<div>Rounds: {roundCount}</div>)}
         {(timerType === 'emom' || timerType === 'tabata') && snapshot.currentRound && (
           <div>Round {snapshot.currentRound} of {snapshot.totalRounds}</div>
         )}
-        
         {timerType === 'intervals' && snapshot.currentRound && (
           <div>Round {snapshot.currentRound} of {snapshot.totalRounds || 1}</div>
         )}
-        
         {timerType === 'forTime' && (
           <div>
             <div>Round {snapshot.currentRound} of {(config as ForTimeConfig).rounds || 3}</div>
@@ -50,7 +32,6 @@ export const TimerPhaseIndicator = React.memo(function TimerPhaseIndicator() {
             </button>
           </div>
         )}
-        
         {timerType === 'tabata' && snapshot.currentSet && snapshot.currentSet > 1 && (
           <div className="text-sm mt-1">
             Set {snapshot.currentSet} of {(config as TabataConfig).sets || 1}
