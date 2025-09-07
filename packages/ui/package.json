@@ -14,6 +14,7 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "sideEffects": false,
   "files": [
     "dist",
     "src"
@@ -46,4 +47,3 @@
     "access": "public"
   }
 }
-

@@ -102,6 +102,17 @@ export default function App() {
 - [ ] `pnpm release` publishes new UI and bumps react if needed.
 - [ ] Demo deployed.
 
+## Incorporate Recommendations
+See `docs/ui-package-recommendations.md` for API and design enhancements. We will incorporate the following in the UI package:
+
+- API: Expand `WorkoutTimer` props (soundEnabled, callbacks, compactMode, hideControls, theme).
+- Headless: Provide a `useWorkoutTimer` hook that composes `@workout-timer/react` for maximum flexibility.
+- Exports: Re-export granular UI components and their prop types; consider optional styles export later.
+- Styling: Use CSS variables for theming; keep className overrides; avoid Tailwind as a hard dependency.
+- SSR/Native: Avoid direct DOM-only code; gate browser-only APIs; future RN-friendly abstractions.
+- Performance: Memoize display components and use proper dependency arrays.
+- Packaging: `sideEffects: false` for tree-shaking; stable ESM/CJS/Types exports.
+
 ## Risks / Mitigations
 - Breaking imports: Provide clear migration notes; keep exports stable.
 - Styling regressions: Keep neutral defaults; test dark/light/charcoal.
@@ -111,4 +122,3 @@ export default function App() {
 - Add README with usage examples for `@workout-timer/ui`.
 - Add storybook (optional) or docs page to showcase components.
 - Add basic tests for key UI components (render + interaction).
-
