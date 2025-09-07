@@ -37,9 +37,18 @@ export interface ControlButton {
 }
 
 /**
- * Utility function to format time
+ * Utility functions to format time
+ * - Remaining time uses ceil to show the starting value for a full second
+ * - Elapsed time uses floor to only increment after a full second has passed
  */
-function formatTime(ms: number): string {
+function formatRemainingTime(ms: number): string {
+  const totalSeconds = Math.ceil(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+function formatElapsedTime(ms: number): string {
   const totalSeconds = Math.floor(ms / 1000);
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
@@ -54,7 +63,7 @@ export class AMRAPStrategy implements ITimerStrategy {
     if (snapshot.isCountdown) {
       return Math.ceil((snapshot.countdownRemaining || 0) / 1000).toString();
     }
-    return formatTime(snapshot.remaining);
+    return formatRemainingTime(snapshot.remaining);
   }
 
   getPhaseInfo(snapshot: ExtendedTimerSnapshot): PhaseInfo {
@@ -93,7 +102,7 @@ export class EMOMStrategy implements ITimerStrategy {
     if (snapshot.isCountdown) {
       return Math.ceil((snapshot.countdownRemaining || 0) / 1000).toString();
     }
-    return formatTime(snapshot.remaining);
+    return formatRemainingTime(snapshot.remaining);
   }
 
   getPhaseInfo(snapshot: ExtendedTimerSnapshot): PhaseInfo {
@@ -135,7 +144,7 @@ export class TabataStrategy implements ITimerStrategy {
     if (snapshot.isCountdown) {
       return Math.ceil((snapshot.countdownRemaining || 0) / 1000).toString();
     }
-    return formatTime(snapshot.intervalRemaining || snapshot.remaining);
+    return formatRemainingTime(snapshot.intervalRemaining || snapshot.remaining);
   }
 
   getPhaseInfo(snapshot: ExtendedTimerSnapshot): PhaseInfo {
@@ -182,7 +191,7 @@ export class ForTimeStrategy implements ITimerStrategy {
     if (snapshot.isCountdown) {
       return Math.ceil((snapshot.countdownRemaining || 0) / 1000).toString();
     }
-    return formatTime(snapshot.elapsed);
+    return formatElapsedTime(snapshot.elapsed);
   }
 
   getPhaseInfo(snapshot: ExtendedTimerSnapshot): PhaseInfo {
@@ -224,7 +233,7 @@ export class IntervalsStrategy implements ITimerStrategy {
     if (snapshot.isCountdown) {
       return Math.ceil((snapshot.countdownRemaining || 0) / 1000).toString();
     }
-    return formatTime(snapshot.intervalRemaining || snapshot.remaining);
+    return formatRemainingTime(snapshot.intervalRemaining || snapshot.remaining);
   }
 
   getPhaseInfo(snapshot: ExtendedTimerSnapshot): PhaseInfo {
