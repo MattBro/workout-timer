@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TimerProvider, ThemeProvider, useTimerConfig } from '@workout-timer/react';
 import type { TimerConfig } from '@workout-timer/react';
 import { TimerScreen } from './TimerScreen';
@@ -168,6 +168,8 @@ export function WorkoutTimer({
         countdownEnabled={(config as any).countdownEnabled}
         countdownTime={(config as any).countdownTime}
       >
+        {/* Lock background scroll when settings are open (iOS friendly) */}
+        <BodyScrollLock active={showSettings} />
         <div className={`min-h-screen bg-gray-900 text-white flex flex-col ${className || ''}`}>
           <TimerScreen onOpenSettings={() => setShowSettings(true)} onClickTime={() => setShowSettings(true)} soundEnabled={soundEnabled} onToggleSound={() => setSoundEnabled(!soundEnabled)} />
 
@@ -226,4 +228,17 @@ export function WorkoutTimer({
       </TimerProvider>
     </ThemeProvider>
   );
+}
+
+// Small helper to lock body scroll when a modal is open
+function BodyScrollLock({ active }: { active: boolean }) {
+  useEffect(() => {
+    if (active) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = prev; };
+    }
+    return;
+  }, [active]);
+  return null;
 }

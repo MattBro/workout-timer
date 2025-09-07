@@ -11,6 +11,7 @@ export function ScrollableTimePicker({ value, onChange, label }: ScrollableTimeP
   const seconds = value % 60;
   const minuteRef = useRef<HTMLDivElement>(null);
   const secondRef = useRef<HTMLDivElement>(null);
+  const syncingRef = useRef(false);
   //
   const itemHeight = 48;
   const debouncers = useRef<Record<string, any>>({});
@@ -32,10 +33,20 @@ export function ScrollableTimePicker({ value, onChange, label }: ScrollableTimeP
   const scrollToValue = (el: HTMLDivElement | null, v: number) => {
     if (el) el.scrollTop = v * itemHeight;
   };
+  // Initial position
   useEffect(() => {
     scrollToValue(minuteRef.current, minutes);
     scrollToValue(secondRef.current, seconds);
   }, []);
+
+  // Keep scroll position in sync if external value changes
+  useEffect(() => {
+    syncingRef.current = true;
+    scrollToValue(minuteRef.current, minutes);
+    scrollToValue(secondRef.current, seconds);
+    const id = requestAnimationFrame(() => { syncingRef.current = false; });
+    return () => cancelAnimationFrame(id);
+  }, [minutes, seconds]);
 
   const scrollContainerClasses = useMemo(() => 'h-36 w-16 overflow-y-scroll scrollbar-hide touch-pan-y overscroll-contain', []);
 
@@ -43,7 +54,7 @@ export function ScrollableTimePicker({ value, onChange, label }: ScrollableTimeP
     const items = [];
     for (let i = 0; i <= max; i++) {
       items.push(
-        <div key={i} className={`h-12 flex items-center justify-center text-2xl font-mono transition-all ${i === current ? 'text-white font-bold scale-110' : 'text-gray-500'}`} style={{ scrollSnapAlign: 'center' }}>
+        <div key={i} className={`h-12 flex items-center justify-center text-2xl font-mono transition-all ${i === current ? 'text-white font-bold scale-110' : 'text-gray-500'}`} style={{ scrollSnapAlign: 'center', scrollSnapStop: 'always' }}>
           {i.toString().padStart(2, '0')}
         </div>
       );
