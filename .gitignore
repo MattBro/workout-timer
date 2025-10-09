@@ -72,6 +72,7 @@ temp/
 .next/
 .nuxt/
 .rollup.cache/
+.eslintcache
 
 # Package manager
 .npm/
