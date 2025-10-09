@@ -9,11 +9,11 @@ export const TimerPhaseIndicator = memo(function TimerPhaseIndicator() {
 
   return (
     <>
-      <div className="text-2xl md:text-4xl font-bold mb-4 animate-pulse">
+      <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-2 sm:mb-4 animate-pulse">
         {phaseInfo.icon && <span>{phaseInfo.icon} </span>}
         {phaseInfo.text}
       </div>
-      <div className="text-xl md:text-2xl opacity-90">
+      <div className="text-base sm:text-xl md:text-2xl opacity-90">
         {timerType === 'amrap' && (<div>Rounds: {roundCount}</div>)}
         {(timerType === 'emom' || timerType === 'tabata') && snapshot.currentRound && (
           <div>Round {snapshot.currentRound} of {snapshot.totalRounds}</div>
