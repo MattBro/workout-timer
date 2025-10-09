@@ -1,8 +1,9 @@
 import { useTimerContext, useTimerDisplay } from '@workout-timer/react';
+
+import { TimerControls } from './Timer/TimerControls';
 import { TimerDisplay } from './Timer/TimerDisplay';
 import { TimerPhaseIndicator } from './Timer/TimerPhaseIndicator';
 import { TimerProgress } from './Timer/TimerProgress';
-import { TimerControls } from './Timer/TimerControls';
 
 export interface TimerScreenProps {
   onOpenSettings: () => void;

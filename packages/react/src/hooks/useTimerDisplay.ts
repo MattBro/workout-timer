@@ -3,10 +3,11 @@
  * @module useTimerDisplay
  */
 
-import { useMemo } from 'react';
 import { TimerState } from '@workout-timer/core';
-import type { ExtendedTimerSnapshot, PhaseInfo, RoundInfo } from '../types/timer.types';
+import { useMemo } from 'react';
+
 import { TimerStrategyFactory } from '../strategies/TimerStrategy';
+import type { ExtendedTimerSnapshot, PhaseInfo, RoundInfo } from '../types/timer.types';
 
 /**
  * Custom hook for timer display logic

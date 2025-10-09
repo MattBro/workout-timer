@@ -1,6 +1,6 @@
-import { memo } from 'react';
 import { useTimerContext, useTimerDisplay } from '@workout-timer/react';
 import type { ForTimeConfig, TabataConfig } from '@workout-timer/react';
+import { memo } from 'react';
 
 export const TimerPhaseIndicator = memo(function TimerPhaseIndicator() {
   const { snapshot, timerType, roundCount, handleRoundComplete, config } = useTimerContext();

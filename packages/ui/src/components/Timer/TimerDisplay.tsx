@@ -1,8 +1,8 @@
 /**
  * Timer Display Component - Shows the timer countdown/countup
  */
-import { memo } from 'react';
 import { useTimerContext, useTimerDisplay } from '@workout-timer/react';
+import { memo } from 'react';
 
 export interface TimerDisplayProps { onClick?: () => void }
 

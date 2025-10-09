@@ -4,7 +4,8 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { ExtendedTimerSnapshot } from '../types/timer.types';
+
+import type { ExtendedTimerSnapshot } from '../types/timer.types';
 
 /**
  * Sound configuration interface
@@ -39,7 +40,7 @@ export function useTimerSound(
     const saved = localStorage.getItem('timer-sound-config');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        return JSON.parse(saved) as SoundConfig;
       } catch (e) {
         console.error('Failed to parse sound config:', e);
       }
@@ -70,7 +71,7 @@ export function useTimerSound(
     
     return () => {
       if (audioContextRef.current) {
-        audioContextRef.current.close();
+        void audioContextRef.current.close();
       }
     };
   }, []);
@@ -131,16 +132,16 @@ export function useTimerSound(
   useEffect(() => {
     if (!snapshot || !soundConfig.phaseAnnouncements) return;
     
-    const phase = `${snapshot.state}-${(snapshot as any).intervalName || ''}`;
+    const phase = `${snapshot.state}-${snapshot.intervalName || ''}`;
     
     if (phase !== lastAnnouncedRef.current) {
       lastAnnouncedRef.current = phase;
       
       // Announce phase changes
-      if (timerType === 'tabata' && (snapshot as any).isWorking !== undefined) {
-        speak((snapshot as any).isWorking ? 'Work' : 'Rest');
-      } else if (timerType === 'intervals' && (snapshot as any).intervalName) {
-        speak((snapshot as any).intervalName);
+      if (timerType === 'tabata' && snapshot.isWorking !== undefined) {
+        speak(snapshot.isWorking ? 'Work' : 'Rest');
+      } else if (timerType === 'intervals' && snapshot.intervalName) {
+        speak(snapshot.intervalName);
       }
     }
   }, [snapshot, timerType, soundConfig.phaseAnnouncements, speak]);

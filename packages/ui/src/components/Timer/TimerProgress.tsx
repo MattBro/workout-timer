@@ -1,5 +1,5 @@
-import { memo } from 'react';
 import { useTimerContext, useTimerDisplay } from '@workout-timer/react';
+import { memo } from 'react';
 
 export const TimerProgress = memo(function TimerProgress() {
   const { snapshot, timerType, roundCount } = useTimerContext();

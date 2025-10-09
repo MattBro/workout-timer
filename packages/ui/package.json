@@ -1,6 +1,6 @@
 {
   "name": "@workout-timer/ui",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Reusable React UI components for workout timers",
   "author": "Matthew Brooker",
   "license": "MIT",

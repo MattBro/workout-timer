@@ -3,7 +3,7 @@
  * @module timer.types
  */
 
-import { TimerSnapshot as BaseTimerSnapshot } from '@workout-timer/core';
+import type { TimerSnapshot as BaseTimerSnapshot } from '@workout-timer/core';
 
 /**
  * Extended timer snapshot with additional fields for UI display

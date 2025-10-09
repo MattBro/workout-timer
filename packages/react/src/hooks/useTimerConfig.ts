@@ -137,7 +137,7 @@ export function useTimerConfig(initialType: string = 'amrap') {
   }, []);
 
   const coreConfig = useMemo(() => {
-    const { soundEnabled, countdownEnabled, countdownTime, ...core } = config;
+    const { soundEnabled: _soundEnabled, countdownEnabled: _countdownEnabled, countdownTime: _countdownTime, ...core } = config;
     return core;
   }, [config]);
 

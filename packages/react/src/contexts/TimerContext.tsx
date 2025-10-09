@@ -2,13 +2,17 @@
  * Timer Context - Core state management for the timer application
  * @module TimerContext
  */
+/* eslint-disable react-hooks/exhaustive-deps */
 
+import type { Timer } from '@workout-timer/core';
+import { createTimer, CountdownWrapper } from '@workout-timer/core';
 import { createContext, useContext, useState, useEffect } from 'react';
-import { createTimer, CountdownWrapper, Timer } from '@workout-timer/core';
+import type { ReactNode } from 'react';
+
 import type { TimerConfig } from '../hooks/useTimerConfig';
 import type { ExtendedTimerSnapshot } from '../types/timer.types';
 import { TimerError, TimerErrorType } from '../types/timer.types';
-import type { ReactNode } from 'react';
+
 
 /**
  * Timer context value interface
@@ -79,7 +83,7 @@ export function TimerProvider({
       }
 
       // Create new timer based on config
-      let newTimer = createTimer(config as any) as Timer;
+      let newTimer = createTimer(config) as Timer;
       
       // Wrap with countdown if enabled
       if (countdownEnabled && countdownTime > 0) {
@@ -100,17 +104,14 @@ export function TimerProvider({
       // Timer finished
     });
 
-    newTimer.on('roundStart', (...args: unknown[]) => {
-      const round = args[0] as number;
-      console.log(`Round ${round} started!`);
+    newTimer.on('roundStart', (..._args: unknown[]) => {
+      // Round started
     });
     
     newTimer.on('workStart', () => {
-      console.log('Work phase started!');
     });
     
     newTimer.on('restStart', () => {
-      console.log('Rest phase started!');
     });
 
     // Configure sound

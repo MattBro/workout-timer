@@ -1,4 +1,8 @@
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable jsx-a11y/label-has-associated-control */
+
 interface Interval {
   name: string;
   duration: number;
