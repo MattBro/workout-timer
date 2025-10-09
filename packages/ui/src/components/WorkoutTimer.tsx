@@ -180,7 +180,7 @@ export function WorkoutTimer({
       >
         {/* Lock background scroll when settings are open (iOS friendly) */}
         <BodyScrollLock active={showSettings} />
-        <div className={`min-h-screen bg-gray-900 text-white flex flex-col ${className || ''}`}>
+        <div className={`h-full bg-gray-900 text-white flex flex-col ${className || ''}`}>
           <TimerScreen onOpenSettings={() => setShowSettings(true)} onClickTime={() => setShowSettings(true)} soundEnabled={soundEnabled} onToggleSound={() => setSoundEnabled(!soundEnabled)} />
 
           <div className={`fixed inset-0 z-40 ${showSettings ? 'pointer-events-auto' : 'pointer-events-none'}`}>
